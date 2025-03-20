@@ -621,6 +621,48 @@
                 console.error(e);
             }
         });
+            e.preventDefault();
+            
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const distance = document.getElementById('distance').value;
+            const avgSpeed = document.getElementById('avgSpeed').value;
+            const hrMin = document.getElementById('hrMin').value;
+            const hrMax = document.getElementById('hrMax').value;
+            const calories = document.getElementById('calories').value;
+            const strokeRate = document.getElementById('strokeRate').value || null;
+            const notes = document.getElementById('notes').value;
+            
+            tracker.addSession(date, duration, distance, avgSpeed, hrMin, hrMax, calories, strokeRate, notes);
+            saveData();
+            refreshUI();
+            sessionForm.reset();
+            document.getElementById('date').valueAsDate = new Date();
+            alert("Session added successfully!");
+        });
+
+        exportBtn.addEventListener('click', function() {
+            exportBox.value = tracker.exportData();
+        });
+
+        importBtn.addEventListener('click', function() {
+            try {
+                if (exportBox.value.trim() === '') {
+                    alert("Please paste data to import first!");
+                    return;
+                }
+                
+                if (confirm("This will replace all your current data. Are you sure?")) {
+                    tracker.importData(exportBox.value);
+                    saveData();
+                    refreshUI();
+                    alert("Data imported successfully!");
+                }
+            } catch (e) {
+                alert("Error importing data! Please check the format.");
+                console.error(e);
+            }
+        });
 
         // Helper function to save data to localStorage
         function saveData() {

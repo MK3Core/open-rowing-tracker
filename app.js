@@ -217,38 +217,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Session form submission
-    sessionForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Check if we have body stats before allowing session submission
-        if (!tracker.getLatestBodyStats()) {
-            showToast('Please add body measurements before recording a session', 'warning');
-            return;
-        }
-        
-        const date = document.getElementById('date').value;
-        const duration = document.getElementById('duration').value;
-        const distance = document.getElementById('distance').value;
-        const avgSpeed = document.getElementById('avgSpeed').value;
-        const hrMin = document.getElementById('hrMin').value;
-        const hrMax = document.getElementById('hrMax').value;
-        const calories = document.getElementById('calories').value; // Auto-calculated
-        const strokeRate = document.getElementById('strokeRate').value || null;
-        const notes = document.getElementById('notes').value;
-        
-        // Add intensity info to notes
-        const intensityDisplay = document.getElementById('intensityDisplay').value;
-        const updatedNotes = notes ? `${notes} [${intensityDisplay}]` : `[${intensityDisplay}]`;
-        
-        tracker.addSession(date, duration, distance, avgSpeed, hrMin, hrMax, calories, strokeRate, updatedNotes);
-        saveData();
-        refreshUI();
-        sessionForm.reset();
-        document.getElementById('date').valueAsDate = new Date();
-        document.getElementById('intensityDisplay').value = '';
-        
-        showToast('Session added successfully!');
-    });
+sessionForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Check if we have body stats before allowing session submission
+    if (!tracker.getLatestBodyStats()) {
+        showToast('Please add body measurements before recording a session', 'warning');
+        return;
+    }
+    
+    const date = document.getElementById('date').value;
+    const duration = document.getElementById('duration').value;
+    const distance = document.getElementById('distance').value;
+    const avgSpeed = document.getElementById('avgSpeed').value;
+    const heartRate = document.getElementById('heartRate').value || null; // Now optional
+    const calories = document.getElementById('calories').value; // Auto-calculated
+    const strokeRate = document.getElementById('strokeRate').value || null;
+    const notes = document.getElementById('notes').value;
+    
+    // Add intensity info to notes
+    const intensityDisplay = document.getElementById('intensityDisplay').value;
+    const updatedNotes = notes ? `${notes} [${intensityDisplay}]` : `[${intensityDisplay}]`;
+    
+    // Call the modified tracker method (to be updated in tracker.js)
+    tracker.addSession(date, duration, distance, avgSpeed, heartRate, calories, strokeRate, updatedNotes);
+    saveData();
+    refreshUI();
+    sessionForm.reset();
+    document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('intensityDisplay').value = '';
+    
+    showToast('Session added successfully!');
+});
 
     // Export button click
     exportBtn.addEventListener('click', function() {

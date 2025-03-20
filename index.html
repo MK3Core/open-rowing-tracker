@@ -6,40 +6,193 @@
     <title>Rowing Progress Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --jumbotron-bg: #e9ecef;
+            --stats-container-bg: #f8f9fa;
+            --border-color: rgba(0, 0, 0, 0.125);
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --btn-primary-bg: #0d6efd;
+            --btn-primary-text: #ffffff;
+            --btn-success-bg: #198754;
+            --btn-success-text: #ffffff;
+            --btn-warning-bg: #ffc107;
+            --btn-warning-text: #000000;
+        }
+        
+        [data-theme="dark"] {
+            --bg-color: #212529;
+            --text-color: #f8f9fa;
+            --card-bg: #343a40;
+            --jumbotron-bg: #343a40;
+            --stats-container-bg: #2b3035;
+            --border-color: rgba(255, 255, 255, 0.125);
+            --input-bg: #2b3035;
+            --input-border: #495057;
+            --btn-primary-bg: #0d6efd;
+            --btn-primary-text: #ffffff;
+            --btn-success-bg: #198754;
+            --btn-success-text: #ffffff;
+            --btn-warning-bg: #ffc107;
+            --btn-warning-text: #000000;
+        }
+        
         body {
             padding-top: 20px;
             padding-bottom: 40px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
+        
         .jumbotron {
             padding: 2rem;
             margin-bottom: 2rem;
-            background-color: #e9ecef;
+            background-color: var(--jumbotron-bg);
             border-radius: .3rem;
         }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        
+        .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
         .session-card {
             margin-bottom: 15px;
         }
+        
         .stats-container {
-            background-color: #f8f9fa;
+            background-color: var(--stats-container-bg);
             border-radius: 5px;
             padding: 15px;
             margin-bottom: 20px;
+            border: 1px solid var(--border-color);
         }
+        
         .text-success {
-            color: #28a745;
+            color: #28a745 !important;
         }
+        
         .text-danger {
-            color: #dc3545;
+            color: #dc3545 !important;
         }
+        
         #exportBox {
             width: 100%;
             height: 150px;
             font-family: monospace;
             font-size: 12px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-color: var(--input-border);
+        }
+        
+        .form-control {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-color: var(--input-border);
+        }
+        
+        .form-control:focus {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+        }
+        
+        .btn-success {
+            background-color: var(--btn-success-bg);
+            color: var(--btn-success-text);
+        }
+        
+        .btn-warning {
+            background-color: var(--btn-warning-bg);
+            color: var(--btn-warning-text);
+        }
+        
+        .table {
+            color: var(--text-color);
+        }
+        
+        /* Theme toggle switch */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+        }
+        
+        .theme-switch input {
+            display: none;
+        }
+        
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 16px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 16px;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .theme-icon {
+            margin-left: 10px;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
+    <!-- Theme toggle switch -->
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <span class="theme-icon">🌙</span>
+    </div>
+    
     <div class="container">
         <div class="jumbotron">
             <h1>Rowing Progress Tracker</h1>
@@ -291,6 +444,72 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="tracker.js"></script>
     <script>
+        // Theme switching functionality
+        const toggleSwitch = document.querySelector('#checkbox');
+        const themeIcon = document.querySelector('.theme-icon');
+        
+        // Check for saved theme preference
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        // Apply saved theme on load
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggleSwitch.checked = true;
+            themeIcon.textContent = '☀️';
+        }
+        
+        // Handle toggle switch changes
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.textContent = '☀️';
+                
+                // Update chart theme if chart exists
+                if (weightChart) {
+                    updateChartTheme('dark');
+                }
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeIcon.textContent = '🌙';
+                
+                // Update chart theme if chart exists
+                if (weightChart) {
+                    updateChartTheme('light');
+                }
+            }
+        }
+        
+        // Function to update chart colors based on theme
+        function updateChartTheme(theme) {
+            if (!weightChart) return;
+            
+            const textColor = theme === 'dark' ? '#f8f9fa' : '#212529';
+            const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            // Update chart options
+            weightChart.options.scales.x.ticks.color = textColor;
+            weightChart.options.scales.x.grid.color = gridColor;
+            weightChart.options.scales.x.title.color = textColor;
+            
+            weightChart.options.scales.y.ticks.color = textColor;
+            weightChart.options.scales.y.grid.color = gridColor;
+            weightChart.options.scales.y.title.color = textColor;
+            
+            weightChart.options.scales.y1.ticks.color = textColor;
+            weightChart.options.scales.y1.grid.color = gridColor;
+            weightChart.options.scales.y1.title.color = textColor;
+            
+            weightChart.options.plugins.legend.labels.color = textColor;
+            
+            weightChart.update();
+        }
+        
+        // Add event listener for theme toggle
+        toggleSwitch.addEventListener('change', switchTheme);
+    </script>
+    <script>
         // Initialize the rowing tracker
         let tracker = new RowingTracker();
         let weightChart = null;
@@ -416,6 +635,11 @@
                 return; // Need at least 2 points for a meaningful chart
             }
             
+            // Check current theme
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const textColor = currentTheme === 'dark' ? '#f8f9fa' : '#212529';
+            const gridColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
             const chartData = {
                 labels: bodyStats.map(stat => {
                     const date = new Date(stat.date);
@@ -479,7 +703,14 @@
                     x: {
                         title: {
                             display: true,
-                            text: 'Date'
+                            text: 'Date',
+                            color: textColor
+                        },
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
                         }
                     },
                     y: {
@@ -488,7 +719,14 @@
                         position: 'left',
                         title: {
                             display: true,
-                            text: 'Weight (lbs)'
+                            text: 'Weight (lbs)',
+                            color: textColor
+                        },
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
                         }
                     },
                     y1: {
@@ -497,12 +735,24 @@
                         position: 'right',
                         title: {
                             display: true,
-                            text: 'Percentage (%)'
+                            text: 'Percentage (%)',
+                            color: textColor
                         },
                         min: 0,
                         max: 100,
+                        ticks: {
+                            color: textColor
+                        },
                         grid: {
+                            color: gridColor,
                             drawOnChartArea: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: textColor
                         }
                     }
                 }

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rowing Progress Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+        .jumbotron {
+            padding: 2rem;
+            margin-bottom: 2rem;
+            background-color: #e9ecef;
+            border-radius: .3rem;
+        }
+        .session-card {
+            margin-bottom: 15px;
+        }
+        .stats-container {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .text-success {
+            color: #28a745;
+        }
+        .text-danger {
+            color: #dc3545;
+        }
+        #exportBox {
+            width: 100%;
+            height: 150px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Rowing Progress Tracker</h1>
+            <p class="lead">Track your rowing workouts and monitor your progress over time.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>User Profile</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="mb-3">
+                                <label for="weight" class="form-label">Current Weight (lbs)</label>
+                                <input type="number" class="form-control" id="weight" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bmi" class="form-label">Current BMI</label>
+                                <input type="number" step="0.1" class="form-control" id="bmi" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Add New Rowing Session</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="sessionForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="date" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="date" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="duration" class="form-label">Duration (min)</label>
+                                        <input type="number" class="form-control" id="duration" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="distance" class="form-label">Distance (miles)</label>
+                                        <input type="number" step="0.1" class="form-control" id="distance" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="avgSpeed" class="form-label">Avg Speed (mph)</label>
+                                        <input type="number" step="0.1" class="form-control" id="avgSpeed" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="hrMin" class="form-label">Min Heart Rate (BPM)</label>
+                                        <input type="number" class="form-control" id="hrMin" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="hrMax" class="form-label">Max Heart Rate (BPM)</label>
+                                        <input type="number" class="form-control" id="hrMax" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="calories" class="form-label">Calories Burned</label>
+                                        <input type="number" class="form-control" id="calories" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="strokeRate" class="form-label">Stroke Rate (SPM) (optional)</label>
+                                        <input type="number" class="form-control" id="strokeRate">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Session Notes</label>
+                                <textarea class="form-control" id="notes" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Add Session</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="stats-container">
+                    <h3>Progress Overview</h3>
+                    <div id="progressStats">
+                        <p>Add at least two sessions to see your progress.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="stats-container">
+                    <h3>Total Stats</h3>
+                    <div id="totalStats">
+                        <p>No sessions recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stats-container">
+                    <h3>Weekly Summary</h3>
+                    <div id="weeklyStats">
+                        <p>No sessions recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recent Sessions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionsList">
+                            <p>No sessions recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Import/Export Data</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="exportBox" class="form-label">Your Data (copy this to save your progress)</label>
+                            <textarea id="exportBox" class="form-control"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <button id="exportBtn" class="btn btn-primary">Export Data</button>
+                            </div>
+                            <div class="col-6">
+                                <button id="importBtn" class="btn btn-warning">Import Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="tracker.js"></script>
+    <script>
+        // Initialize the rowing tracker
+        let tracker = new RowingTracker();
+        
+        // Attempt to load data from localStorage
+        const savedData = localStorage.getItem('rowingTrackerData');
+        if (savedData) {
+            try {
+                tracker.importData(savedData);
+                refreshUI();
+            } catch (e) {
+                console.error("Error loading saved data:", e);
+            }
+        }
+
+        // DOM Elements
+        const profileForm = document.getElementById('profileForm');
+        const sessionForm = document.getElementById('sessionForm');
+        const exportBox = document.getElementById('exportBox');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Fill profile form if data exists
+        if (tracker.profile.currentWeight) {
+            document.getElementById('weight').value = tracker.profile.currentWeight;
+            document.getElementById('bmi').value = tracker.profile.currentBMI;
+        }
+
+        // Event Listeners
+        profileForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const weight = document.getElementById('weight').value;
+            const bmi = document.getElementById('bmi').value;
+            tracker.updateProfile(weight, bmi);
+            saveData();
+            refreshUI();
+            alert("Profile updated successfully!");
+        });
+
+        sessionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const distance = document.getElementById('distance').value;
+            const avgSpeed = document.getElementById('avgSpeed').value;
+            const hrMin = document.getElementById('hrMin').value;
+            const hrMax = document.getElementById('hrMax').value;
+            const calories = document.getElementById('calories').value;
+            const strokeRate = document.getElementById('strokeRate').value || null;
+            const notes = document.getElementById('notes').value;
+            
+            tracker.addSession(date, duration, distance, avgSpeed, hrMin, hrMax, calories, strokeRate, notes);
+            saveData();
+            refreshUI();
+            sessionForm.reset();
+            document.getElementById('date').valueAsDate = new Date();
+            alert("Session added successfully!");
+        });
+
+        exportBtn.addEventListener('click', function() {
+            exportBox.value = tracker.exportData();
+        });
+
+        importBtn.addEventListener('click', function() {
+            try {
+                if (exportBox.value.trim() === '') {
+                    alert("Please paste data to import first!");
+                    return;
+                }
+                
+                if (confirm("This will replace all your current data. Are you sure?")) {
+                    tracker.importData(exportBox.value);
+                    saveData();
+                    refreshUI();
+                    alert("Data imported successfully!");
+                }
+            } catch (e) {
+                alert("Error importing data! Please check the format.");
+                console.error(e);
+            }
+        });
+
+        // Helper function to save data to localStorage
+        function saveData() {
+            localStorage.setItem('rowingTrackerData', tracker.exportData());
+        }
+
+        // Refresh UI with current data
+        function refreshUI() {
+            // Update progress stats
+            const progressStatsEl = document.getElementById('progressStats');
+            const progressStats = tracker.getProgressMetrics();
+            
+            if (typeof progressStats === 'string') {
+                progressStatsEl.innerHTML = `<p>${progressStats}</p>`;
+            } else {
+                progressStatsEl.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Total Sessions:</strong> ${progressStats.totalSessions}</p>
+                            <p><strong>Days Active:</strong> ${progressStats.daysBetween}</p>
+                            <p><strong>Total Distance:</strong> ${progressStats.totalDistance} miles</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Speed Change:</strong> 
+                                <span class="${progressStats.speedChange.value > 0 ? 'text-success' : 'text-danger'}">
+                                    ${progressStats.speedChange.value > 0 ? '+' : ''}${progressStats.speedChange.value} mph (${progressStats.speedChange.percent}%)
+                                </span>
+                            </p>
+                            <p><strong>Duration Change:</strong> 
+                                <span class="${progressStats.durationChange.value > 0 ? 'text-success' : 'text-danger'}">
+                                    ${progressStats.durationChange.value > 0 ? '+' : ''}${progressStats.durationChange.value} min (${progressStats.durationChange.percent}%)
+                                </span>
+                            </p>
+                            <p><strong>Heart Rate Change:</strong> 
+                                <span class="${progressStats.heartRateChange.value < 0 ? 'text-success' : 'text-danger'}">
+                                    ${progressStats.heartRateChange.value > 0 ? '+' : ''}${progressStats.heartRateChange.value} BPM
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Update total stats
+            const totalStatsEl = document.getElementById('totalStats');
+            const totalStats = tracker.getTotalStats();
+            
+            if (typeof totalStats === 'string') {
+                totalStatsEl.innerHTML = `<p>${totalStats}</p>`;
+            } else {
+                totalStatsEl.innerHTML = `
+                    <p><strong>Total Sessions:</strong> ${totalStats.totalSessions}</p>
+                    <p><strong>Total Duration:</strong> ${totalStats.totalDuration.toFixed(0)} minutes</p>
+                    <p><strong>Total Distance:</strong> ${totalStats.totalDistance.toFixed(2)} miles</p>
+                    <p><strong>Total Calories:</strong> ${totalStats.totalCalories.toFixed(0)}</p>
+                    <p><strong>Average Speed:</strong> ${totalStats.avgSpeed.toFixed(2)} mph</p>
+                    <p><strong>Average Heart Rate:</strong> ${totalStats.avgHeartRate.toFixed(0)} BPM</p>
+                `;
+            }
+            
+            // Update weekly stats
+            const weeklyStatsEl = document.getElementById('weeklyStats');
+            const weeklyStats = tracker.getWeeklyStats();
+            
+            if (typeof weeklyStats === 'string') {
+                weeklyStatsEl.innerHTML = `<p>${weeklyStats}</p>`;
+            } else {
+                let weeklyHtml = '<div style="max-height: 300px; overflow-y: auto;">';
+                weeklyHtml += '<table class="table table-sm"><thead><tr><th>Week</th><th>Sessions</th><th>Duration</th><th>Distance</th><th>Calories</th></tr></thead><tbody>';
+                
+                weeklyStats.forEach(week => {
+                    weeklyHtml += `
+                        <tr>
+                            <td>${week.week}</td>
+                            <td>${week.sessions}</td>
+                            <td>${week.totalDuration} min</td>
+                            <td>${week.totalDistance} mi</td>
+                            <td>${week.totalCalories}</td>
+                        </tr>
+                    `;
+                });
+                
+                weeklyHtml += '</tbody></table></div>';
+                weeklyStatsEl.innerHTML = weeklyHtml;
+            }
+            
+            // Update sessions list
+            const sessionsListEl = document.getElementById('sessionsList');
+            const sessions = tracker.getAllSessions();
+            
+            if (sessions.length === 0) {
+                sessionsListEl.innerHTML = '<p>No sessions recorded yet.</p>';
+            } else {
+                let sessionsHtml = '<div style="max-height: 400px; overflow-y: auto;">';
+                
+                sessions.forEach((session, index) => {
+                    const date = new Date(session.date);
+                    const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    const avgHR = Math.round((session.heartRateRange.min + session.heartRateRange.max) / 2);
+                    
+                    sessionsHtml += `
+                        <div class="card session-card">
+                            <div class="card-body">
+                                <h5 class="card-title">${formattedDate}</h5>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <p class="mb-1"><strong>Duration:</strong> ${session.duration} min</p>
+                                        <p class="mb-1"><strong>Distance:</strong> ${session.distance} mi</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="mb-1"><strong>Speed:</strong> ${session.avgSpeed} mph</p>
+                                        <p class="mb-1"><strong>HR:</strong> ${session.heartRateRange.min}-${session.heartRateRange.max} BPM</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="mb-1"><strong>Calories:</strong> ${session.caloriesBurned}</p>
+                                        <p class="mb-1"><strong>SPM:</strong> ${session.strokeRate || 'N/A'}</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        ${session.notes ? `<p class="mb-1"><em>${session.notes}</em></p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                sessionsHtml += '</div>';
+                sessionsListEl.innerHTML = sessionsHtml;
+            }
+        }
+
+        // Initial UI refresh
+        refreshUI();
+    </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ class RowingTracker {
     if (initialData) {
       this.profile = initialData.profile;
       this.sessions = initialData.sessions;
+      this.bodyStats = initialData.bodyStats || [];
     } else {
       this.profile = {
         currentWeight: null,
@@ -13,6 +14,7 @@ class RowingTracker {
         startDate: new Date().toISOString().split('T')[0], // Today's date as start date
       };
       this.sessions = [];
+      this.bodyStats = []; // Array to store body measurements over time
     }
   }
   
@@ -45,6 +47,27 @@ class RowingTracker {
     this.profile.currentWeight = weight || this.profile.currentWeight;
     this.profile.currentBMI = bmi || this.profile.currentBMI;
     return this.profile;
+  }
+  
+  // Add body stats measurement
+  addBodyStats(date, weight, bmi, bodyFat, muscleMass, bodyWater, notes) {
+    const measurement = {
+      date: date || new Date().toISOString().split('T')[0],
+      weight: weight ? parseFloat(weight) : null,
+      bmi: bmi ? parseFloat(bmi) : null,
+      bodyFat: bodyFat ? parseFloat(bodyFat) : null,
+      muscleMass: muscleMass ? parseFloat(muscleMass) : null, 
+      bodyWater: bodyWater ? parseFloat(bodyWater) : null,
+      notes: notes || ""
+    };
+    
+    this.bodyStats.push(measurement);
+    
+    // Also update the current profile with the latest measurements
+    if (weight) this.profile.currentWeight = parseFloat(weight);
+    if (bmi) this.profile.currentBMI = parseFloat(bmi);
+    
+    return measurement;
   }
   
   // Calculate total stats across all sessions
@@ -167,11 +190,88 @@ class RowingTracker {
     return this.sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
   }
   
+  // Get body stats data
+  getBodyStats() {
+    return this.bodyStats.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+  
+  // Get latest body stats measurement
+  getLatestBodyStats() {
+    if (this.bodyStats.length === 0) return null;
+    const sortedStats = this.bodyStats.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return sortedStats[0];
+  }
+  
+  // Get body stats trends
+  getBodyStatsTrends() {
+    if (this.bodyStats.length < 2) return "Need at least 2 measurements to show trends.";
+    
+    const sortedStats = this.getBodyStats();
+    const first = sortedStats[0];
+    const last = sortedStats[sortedStats.length - 1];
+    const daysBetween = this.daysBetween(new Date(first.date), new Date(last.date));
+    
+    const trends = {
+      totalMeasurements: sortedStats.length,
+      daysBetween: daysBetween,
+      changes: {}
+    };
+    
+    // Calculate changes for each metric
+    if (first.weight && last.weight) {
+      trends.changes.weight = {
+        start: first.weight,
+        current: last.weight,
+        change: last.weight - first.weight,
+        percentChange: ((last.weight - first.weight) / first.weight * 100).toFixed(1)
+      };
+    }
+    
+    if (first.bmi && last.bmi) {
+      trends.changes.bmi = {
+        start: first.bmi,
+        current: last.bmi,
+        change: last.bmi - first.bmi,
+        percentChange: ((last.bmi - first.bmi) / first.bmi * 100).toFixed(1)
+      };
+    }
+    
+    if (first.bodyFat && last.bodyFat) {
+      trends.changes.bodyFat = {
+        start: first.bodyFat,
+        current: last.bodyFat,
+        change: last.bodyFat - first.bodyFat,
+        percentChange: ((last.bodyFat - first.bodyFat) / first.bodyFat * 100).toFixed(1)
+      };
+    }
+    
+    if (first.muscleMass && last.muscleMass) {
+      trends.changes.muscleMass = {
+        start: first.muscleMass,
+        current: last.muscleMass,
+        change: last.muscleMass - first.muscleMass,
+        percentChange: ((last.muscleMass - first.muscleMass) / first.muscleMass * 100).toFixed(1)
+      };
+    }
+    
+    if (first.bodyWater && last.bodyWater) {
+      trends.changes.bodyWater = {
+        start: first.bodyWater,
+        current: last.bodyWater,
+        change: last.bodyWater - first.bodyWater,
+        percentChange: ((last.bodyWater - first.bodyWater) / first.bodyWater * 100).toFixed(1)
+      };
+    }
+    
+    return trends;
+  }
+  
   // Export data as JSON string for saving
   exportData() {
     return JSON.stringify({
       profile: this.profile,
-      sessions: this.sessions
+      sessions: this.sessions,
+      bodyStats: this.bodyStats
     }, null, 2);
   }
   
@@ -180,6 +280,7 @@ class RowingTracker {
     const data = JSON.parse(jsonString);
     this.profile = data.profile;
     this.sessions = data.sessions;
+    this.bodyStats = data.bodyStats || [];
     return this;
   }
 }

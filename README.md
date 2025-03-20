@@ -106,4 +106,9 @@ To keep your data safe, regularly export it using the Export button.
 
 ## License
 
-MIT License - Feel free to use, modify, and distribute as needed.
+This software is licensed for personal, non-commercial use only. 
+
+Copyright © 2025 R. Alexander Core
+
+Permission is granted to use and modify this software for personal purposes only. 
+Commercial use, redistribution, or use for profit is expressly prohibited without prior written permission from the author.

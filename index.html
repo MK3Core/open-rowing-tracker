@@ -23,7 +23,91 @@
             <p class="lead">Track your rowing workouts and monitor your progress over time.</p>
         </div>
 
+        <!-- METRICS SECTIONS MOVED TO TOP -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="stats-container">
+                    <h3>Progress Overview</h3>
+                    <div id="progressStats">
+                        <p>Add at least two sessions to see your progress.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
+            <div class="col-md-6">
+                <div class="stats-container">
+                    <h3>Total Stats</h3>
+                    <div id="totalStats">
+                        <p>No sessions recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stats-container">
+                    <h3>Weekly Summary</h3>
+                    <div id="weeklyStats">
+                        <p>No sessions recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Body Measurement Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="bodyStatsTrends">
+                                    <p>Add at least two measurements to see trends.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="bodyStatsChart" style="height: 300px;">
+                                    <!-- Chart will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Recent Body Measurements</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="bodyStatsList">
+                            <p>No measurements recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Recent Rowing Sessions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionsList">
+                            <p>No sessions recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMS MOVED BELOW METRICS -->
+        <div class="row mt-4">
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-header">
@@ -149,105 +233,34 @@
             </div>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="stats-container">
-                    <h3>Progress Overview</h3>
-                    <div id="progressStats">
-                        <p>Add at least two sessions to see your progress.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="stats-container">
-                    <h3>Total Stats</h3>
-                    <div id="totalStats">
-                        <p>No sessions recorded yet.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="stats-container">
-                    <h3>Weekly Summary</h3>
-                    <div id="weeklyStats">
-                        <p>No sessions recorded yet.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Body Measurement Trends</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div id="bodyStatsTrends">
-                                    <p>Add at least two measurements to see trends.</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div id="bodyStatsChart" style="height: 300px;">
-                                    <!-- Chart will be inserted here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Recent Body Measurements</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="bodyStatsList">
-                            <p>No measurements recorded yet.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Recent Rowing Sessions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="sessionsList">
-                            <p>No sessions recorded yet.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <!-- IMPORT/EXPORT SECTION (COLLAPSIBLE) -->
         <div class="row mt-4 mb-5">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Import/Export Data</h5>
+                <div class="card border-light" style="box-shadow: none;">
+                    <div class="card-header bg-transparent border-bottom-0">
+                        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center w-100 justify-content-between" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#importExportCollapse" 
+                                aria-expanded="false" 
+                                aria-controls="importExportCollapse">
+                            <span>Data Backup & Restore</span>
+                            <span class="small">⯆</span>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="exportBox" class="form-label">Your Data (copy this to save your progress)</label>
-                            <textarea id="exportBox" class="form-control"></textarea>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <button id="exportBtn" class="btn btn-primary">Export Data</button>
+                    <div class="collapse" id="importExportCollapse">
+                        <div class="card-body pt-0">
+                            <div class="small text-muted mb-2">Export your data to save a backup or import previously exported data</div>
+                            <div class="row g-2">
+                                <div class="col-auto">
+                                    <button id="exportBtn" class="btn btn-sm btn-outline-primary">Export</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button id="importBtn" class="btn btn-sm btn-outline-warning">Import</button>
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <button id="importBtn" class="btn btn-warning">Import Data</button>
+                            <div class="collapse mt-2" id="exportBoxContainer">
+                                <textarea id="exportBox" class="form-control form-control-sm" rows="3" placeholder="Your data will appear here when you click Export"></textarea>
                             </div>
                         </div>
                     </div>
@@ -262,5 +275,20 @@
     <script src="toast.js"></script>
     <script src="tracker.js"></script>
     <script src="app.js"></script>
+    
+    <!-- Additional script for export/import UI improvements -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show textarea when export button is clicked
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                document.getElementById('exportBoxContainer').classList.add('show');
+            });
+            
+            // Show textarea when import button is clicked
+            document.getElementById('importBtn').addEventListener('click', function() {
+                document.getElementById('exportBoxContainer').classList.add('show');
+            });
+        });
+    </script>
 </body>
 </html>

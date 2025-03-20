@@ -1,93 +1,102 @@
 # Rowing Progress Tracker
 
-A simple web application to track and visualize your rowing workouts and progress over time.
+A simple web application to track your rowing workouts and body measurements over time.
 
 ## Features
 
 - Track rowing sessions with detailed metrics:
-  - Duration
-  - Distance
-  - Speed
-  - Heart rate
+  - Duration, distance, speed
+  - Heart rate (min/max)
   - Calories burned
   - Stroke rate
   - Notes
+- Track body measurements over time:
+  - Weight
+  - BMI
+  - Body fat percentage
+  - Muscle mass percentage
+  - Body water percentage
 - View progress statistics:
-  - Session-to-session improvements
+  - Performance changes between sessions
   - Weekly summaries
-  - Total stats (distance, duration, calories)
-- Export and import your data
-- Simple web interface that works offline
-- Data stored locally in your browser
+  - Total rowing stats
+  - Body composition trends
+- Data visualization with interactive charts
+- Dark/light mode toggle for comfortable viewing
+- Import/export all data in JSON format
+- Works offline with local storage
 
-## How to Use
+## Setup Instructions
 
-### Quick Start
+1. **Download the Files**
+   - Download all files to a folder on your computer
+   - You need the following files:
+     - `index.html`
+     - `styles.css`
+     - `tracker.js`
+     - `app.js`
+     - `toast.js`
 
-1. Simply open `index.html` in your web browser
-2. Enter your profile information (weight and BMI)
-3. Add your rowing sessions after each workout
-4. View your progress statistics
+2. **Open the Application**
+   - Simply open the `index.html` file in your web browser
+   - No server or internet connection required
 
-### Data Storage
+3. **Import Your Data (Optional)**
+   - Use the provided sample data or paste your own JSON data in the import/export box
+   - Click "Import Data" to load your data
 
-Your data is automatically saved in your browser's local storage. However, it's recommended to:
+## Using the Tracker
 
-1. Periodically export your data using the "Export Data" button
-2. Copy the exported JSON and save it somewhere safe (like a text file)
-3. If you clear your browser data or switch devices, you can import your saved data
+### Tracking Body Measurements
 
-## Setup
+1. Use the "Body Measurements" form to record your body stats
+2. Fill in the data fields (weight, BMI, body fat %, etc.)
+3. Click "Add Measurement" to save
 
-This application requires no installation or server setup:
+### Adding Rowing Sessions
 
-1. Download this repository
-2. Open `index.html` in any modern web browser
-3. Start tracking your progress!
+1. Use the "Add New Rowing Session" form
+2. Enter the date, duration, distance, and other metrics
+3. Click "Add Session" to save
 
-## Initial Data
+### Viewing Your Progress
 
-If you have existing rowing data you'd like to import, use the following format in the Import/Export box:
+- **Progress Overview**: See changes between your first and most recent sessions
+- **Total Stats**: View aggregate statistics across all your sessions
+- **Weekly Summary**: See your rowing data organized by week
+- **Body Measurement Trends**: Track changes in your body composition
+- **Recent Body Measurements**: View your recorded body stats chronologically
+- **Recent Rowing Sessions**: View your individual rowing sessions
 
-```json
-{
-  "profile": {
-    "currentWeight": 250,
-    "currentBMI": 31,
-    "startDate": "2025-03-20"
-  },
-  "sessions": [
-    {
-      "date": "2025-03-20",
-      "duration": 20,
-      "distance": 2,
-      "avgSpeed": 6,
-      "heartRateRange": {
-        "min": 150,
-        "max": 170
-      },
-      "caloriesBurned": 325,
-      "strokeRate": null,
-      "notes": "First few days of rowing. Completed 20 min session."
-    }
-  ]
-}
-```
+### Managing Your Data
+
+- **Export Data**: Click "Export Data" to get a JSON representation of all your data
+- **Import Data**: Paste a previously exported JSON and click "Import Data"
+
+## Data Storage
+
+Your data is stored in your browser's local storage, which means:
+- It persists between sessions on the same device/browser
+- It will be lost if you clear your browser data
+- It's not synced between devices
+
+To keep your data safe, regularly export it using the Export button.
 
 ## Technical Details
 
 - Built with vanilla JavaScript, HTML, and CSS
-- Uses Bootstrap 5 for styling
-- All data stored in browser localStorage
-- No server or internet connection required after initial download
+- Uses Chart.js for data visualization
+- Bootstrap 5 for styling
+- No server-side components or database required
+- All data stored locally in the browser
 
-## Future Enhancements
+## File Structure
 
-- Data visualization with charts
-- Goal setting and tracking
-- Workout plan suggestions
-- Data export to CSV format
-- PWA features for mobile installation
+- `index.html` - Main HTML structure
+- `styles.css` - CSS styles including dark/light mode
+- `tracker.js` - Core functionality for tracking and calculations
+- `app.js` - UI interactivity and event handling
+- `toast.js` - Simple notification system
 
 ## License
 

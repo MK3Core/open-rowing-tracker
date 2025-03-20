@@ -14,7 +14,7 @@ class RowingTracker {
         startDate: new Date().toISOString().split('T')[0], // Today's date as start date
       };
       this.sessions = [];
-      this.bodyStats = []; // Array to store body measurements over time
+      this.bodyStats = [];
     }
   }
   
@@ -42,13 +42,6 @@ class RowingTracker {
     return sessionData;
   }
   
-  // Update user profile
-  updateProfile(weight, bmi) {
-    this.profile.currentWeight = weight || this.profile.currentWeight;
-    this.profile.currentBMI = bmi || this.profile.currentBMI;
-    return this.profile;
-  }
-  
   // Add body stats measurement
   addBodyStats(date, weight, bmi, bodyFat, muscleMass, bodyWater, notes) {
     const measurement = {
@@ -68,6 +61,13 @@ class RowingTracker {
     if (bmi) this.profile.currentBMI = parseFloat(bmi);
     
     return measurement;
+  }
+  
+  // Update user profile
+  updateProfile(weight, bmi) {
+    this.profile.currentWeight = weight || this.profile.currentWeight;
+    this.profile.currentBMI = bmi || this.profile.currentBMI;
+    return this.profile;
   }
   
   // Calculate total stats across all sessions

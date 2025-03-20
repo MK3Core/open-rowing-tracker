@@ -7,7 +7,7 @@ A simple web application to track your rowing workouts and body measurements ove
 - Track rowing sessions with detailed metrics:
   - Duration, distance, speed
   - Heart rate (min/max)
-  - Calories burned
+  - Automatically calculated calories burned based on speed
   - Stroke rate
   - Notes
 - Track body measurements over time:
@@ -26,6 +26,19 @@ A simple web application to track your rowing workouts and body measurements ove
 - Import/export all data in JSON format
 - Works offline with local storage
 
+## Calorie Calculation
+
+The application automatically calculates calories burned based on your weight and rowing speed using the following formula:
+
+```
+Calories = (MET × weight in kg × 3.5) ÷ 200 × duration in minutes
+```
+
+MET values vary by rowing speed:
+- 2.0-3.9 mph: Light effort (2.8 MET)
+- 4.0-5.9 mph: Moderate effort (5.8 MET)
+- 6.0+ mph: Vigorous effort (12.0 MET)
+
 ## Setup Instructions
 
 1. **Download the Files**
@@ -41,23 +54,24 @@ A simple web application to track your rowing workouts and body measurements ove
    - Simply open the `index.html` file in your web browser
    - No server or internet connection required
 
-3. **Import Your Data (Optional)**
-   - Use the provided sample data or paste your own JSON data in the import/export box
-   - Click "Import Data" to load your data
+3. **Getting Started**
+   - The first step is to add your body measurements (weight, BMI, etc.)
+   - Once body measurements are added, you can record rowing sessions
 
 ## Using the Tracker
 
-### Tracking Body Measurements
+### Adding Body Measurements
 
 1. Use the "Body Measurements" form to record your body stats
-2. Fill in the data fields (weight, BMI, body fat %, etc.)
+2. Fill in the required fields (weight, BMI) and any optional fields
 3. Click "Add Measurement" to save
 
-### Adding Rowing Sessions
+### Recording Rowing Sessions
 
 1. Use the "Add New Rowing Session" form
 2. Enter the date, duration, distance, and other metrics
-3. Click "Add Session" to save
+3. The intensity level and calories burned will be automatically calculated based on your speed
+4. Click "Add Session" to save
 
 ### Viewing Your Progress
 
@@ -89,14 +103,6 @@ To keep your data safe, regularly export it using the Export button.
 - Bootstrap 5 for styling
 - No server-side components or database required
 - All data stored locally in the browser
-
-## File Structure
-
-- `index.html` - Main HTML structure
-- `styles.css` - CSS styles including dark/light mode
-- `tracker.js` - Core functionality for tracking and calculations
-- `app.js` - UI interactivity and event handling
-- `toast.js` - Simple notification system
 
 ## License
 

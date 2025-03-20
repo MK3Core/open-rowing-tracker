@@ -5,9 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let weightChart = null;
     
     // DOM Elements
-    const profileForm = document.getElementById('profileForm');
-    const sessionForm = document.getElementById('sessionForm');
     const bodyStatsForm = document.getElementById('bodyStatsForm');
+    const sessionForm = document.getElementById('sessionForm');
     const exportBox = document.getElementById('exportBox');
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
@@ -77,6 +76,75 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listener for theme toggle
     toggleSwitch.addEventListener('change', switchTheme);
     
+    // ====== CALORIE CALCULATOR ======
+    
+    // Add event listeners for auto-calculating calories
+    document.getElementById('duration').addEventListener('input', calculateCalories);
+    document.getElementById('avgSpeed').addEventListener('input', calculateCalories);
+    
+    // Function to determine MET value based on speed
+    function getMETValue(speed) {
+        // Using the MET values based on rowing speed
+        if (speed < 2.0) {
+            return 2.0; // Below the provided range, using minimum
+        } else if (speed >= 2.0 && speed < 4.0) {
+            return 2.8; // Canoeing, rowing, 2.0-3.9 mph, light effort
+        } else if (speed >= 4.0 && speed < 6.0) {
+            return 5.8; // Canoeing, rowing, 4.0-5.9 mph, moderate effort
+        } else if (speed >= 6.0) {
+            return 12.0; // Canoeing, rowing, kayaking, competition, > 6 mph, vigorous effort
+        }
+        
+        // Default value if somehow none of the conditions are met
+        return 5.8;
+    }
+    
+    // Function to get intensity level description
+    function getIntensityDescription(speed) {
+        if (speed < 2.0) {
+            return "Very Light Effort (2.0 MET)";
+        } else if (speed >= 2.0 && speed < 4.0) {
+            return "Light Effort (2.8 MET)";
+        } else if (speed >= 4.0 && speed < 6.0) {
+            return "Moderate Effort (5.8 MET)";
+        } else if (speed >= 6.0) {
+            return "Vigorous Effort (12.0 MET)";
+        }
+        
+        return "Calculating...";
+    }
+    
+    // Calculate calories based on formula
+    function calculateCalories() {
+        // Get the latest body stats for weight
+        const latestStats = tracker.getLatestBodyStats();
+        if (!latestStats || !latestStats.weight) {
+            showToast('Please add body measurements first to calculate calories', 'warning');
+            return;
+        }
+        
+        const weight = latestStats.weight; // in lbs
+        const duration = parseFloat(document.getElementById('duration').value); // in minutes
+        const speed = parseFloat(document.getElementById('avgSpeed').value); // in mph
+        
+        if (weight && duration && speed) {
+            // Determine MET value based on speed
+            const metValue = getMETValue(speed);
+            
+            // Update intensity display
+            document.getElementById('intensityDisplay').value = getIntensityDescription(speed);
+            
+            // Convert weight from lbs to kg
+            const weightKg = weight * 0.45359237;
+            
+            // Formula: Calories = (MET × weight in kg × 3.5) ÷ 200 × duration in minutes
+            const caloriesPerMinute = (metValue * weightKg * 3.5) / 200;
+            const totalCalories = Math.round(caloriesPerMinute * duration);
+            
+            document.getElementById('calories').value = totalCalories;
+        }
+    }
+    
     // ====== DATA LOADING & INITIALIZATION ======
     
     // Set today's date as default for date inputs
@@ -104,24 +172,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Attempt to load data
     const dataLoaded = tryLoadingData();
 
-    // Fill profile form if data exists
-    if (tracker.profile.currentWeight) {
-        document.getElementById('weight').value = tracker.profile.currentWeight;
-        document.getElementById('bmi').value = tracker.profile.currentBMI;
+    // Fill body stats form if latest data exists
+    const latestStats = tracker.getLatestBodyStats();
+    if (latestStats) {
+        // Pre-fill with latest values
+        if (latestStats.weight) document.getElementById('statsWeight').value = latestStats.weight;
+        if (latestStats.bmi) document.getElementById('statsBmi').value = latestStats.bmi;
+        if (latestStats.bodyFat) document.getElementById('bodyFat').value = latestStats.bodyFat;
+        if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
+        if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
     }
 
     // ====== EVENT HANDLERS ======
-
-    // Profile form submission
-    profileForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const weight = document.getElementById('weight').value;
-        const bmi = document.getElementById('bmi').value;
-        tracker.updateProfile(weight, bmi);
-        saveData();
-        refreshUI();
-        showToast('Profile updated successfully!');
-    });
     
     // Body Stats form submission
     bodyStatsForm.addEventListener('submit', function(e) {
@@ -137,9 +199,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         tracker.addBodyStats(date, weight, bmi, bodyFat, muscleMass, bodyWater, notes);
         
-        // Update profile fields with the new stats
-        if (weight) document.getElementById('weight').value = weight;
-        if (bmi) document.getElementById('bmi').value = bmi;
+        // Automatically update profile with the new measurements
+        tracker.updateProfile(weight, bmi);
+        
+        // Recalculate calories if form fields are filled
+        const speedInput = document.getElementById('avgSpeed');
+        const durationInput = document.getElementById('duration');
+        if (speedInput.value && durationInput.value) {
+            calculateCalories();
+        }
         
         saveData();
         refreshUI();
@@ -152,21 +220,33 @@ document.addEventListener('DOMContentLoaded', function() {
     sessionForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Check if we have body stats before allowing session submission
+        if (!tracker.getLatestBodyStats()) {
+            showToast('Please add body measurements before recording a session', 'warning');
+            return;
+        }
+        
         const date = document.getElementById('date').value;
         const duration = document.getElementById('duration').value;
         const distance = document.getElementById('distance').value;
         const avgSpeed = document.getElementById('avgSpeed').value;
         const hrMin = document.getElementById('hrMin').value;
         const hrMax = document.getElementById('hrMax').value;
-        const calories = document.getElementById('calories').value;
+        const calories = document.getElementById('calories').value; // Auto-calculated
         const strokeRate = document.getElementById('strokeRate').value || null;
         const notes = document.getElementById('notes').value;
         
-        tracker.addSession(date, duration, distance, avgSpeed, hrMin, hrMax, calories, strokeRate, notes);
+        // Add intensity info to notes
+        const intensityDisplay = document.getElementById('intensityDisplay').value;
+        const updatedNotes = notes ? `${notes} [${intensityDisplay}]` : `[${intensityDisplay}]`;
+        
+        tracker.addSession(date, duration, distance, avgSpeed, hrMin, hrMax, calories, strokeRate, updatedNotes);
         saveData();
         refreshUI();
         sessionForm.reset();
         document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('intensityDisplay').value = '';
+        
         showToast('Session added successfully!');
     });
 
@@ -191,6 +271,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 tracker.importData(exportBox.value);
                 saveData();
                 refreshUI();
+                
+                // Prefill form fields with latest data
+                const latestStats = tracker.getLatestBodyStats();
+                if (latestStats) {
+                    if (latestStats.weight) document.getElementById('statsWeight').value = latestStats.weight;
+                    if (latestStats.bmi) document.getElementById('statsBmi').value = latestStats.bmi;
+                    if (latestStats.bodyFat) document.getElementById('bodyFat').value = latestStats.bodyFat;
+                    if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
+                    if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
+                }
+                
                 showToast('Data imported successfully!');
             } catch (e) {
                 console.error('Error importing data:', e);
@@ -349,6 +440,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Refresh all UI elements
     function refreshUI() {
+        // Display current profile info
+        const latestStats = tracker.getLatestBodyStats();
+        
         // Update progress stats
         const progressStatsEl = document.getElementById('progressStats');
         const progressStats = tracker.getProgressMetrics();
@@ -391,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof totalStats === 'string') {
             totalStatsEl.innerHTML = `<p>${totalStats}</p>`;
         } else {
-            totalStatsEl.innerHTML = `
+            let statsHTML = `
                 <p><strong>Total Sessions:</strong> ${totalStats.totalSessions}</p>
                 <p><strong>Total Duration:</strong> ${totalStats.totalDuration.toFixed(0)} minutes</p>
                 <p><strong>Total Distance:</strong> ${totalStats.totalDistance.toFixed(2)} miles</p>
@@ -399,6 +493,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p><strong>Average Speed:</strong> ${totalStats.avgSpeed.toFixed(2)} mph</p>
                 <p><strong>Average Heart Rate:</strong> ${totalStats.avgHeartRate.toFixed(0)} BPM</p>
             `;
+            
+            // Add current stats if available
+            if (latestStats) {
+                statsHTML += `
+                    <hr>
+                    <p><strong>Current Weight:</strong> ${latestStats.weight} lbs</p>
+                    <p><strong>Current BMI:</strong> ${latestStats.bmi}</p>
+                `;
+            }
+            
+            totalStatsEl.innerHTML = statsHTML;
         }
         
         // Update weekly stats
@@ -604,49 +709,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial UI refresh
     refreshUI();
-    
-    // First-time setup: Pre-fill export box with sample data if no data loaded
-    if (!dataLoaded) {
-        // Automatically load the sample data for first-time users
-        try {
-            const sampleData = `{
-  "profile": {
-    "currentWeight": 253.8,
-    "currentBMI": 33.6,
-    "startDate": "2025-03-20"
-  },
-  "sessions": [
-    {
-      "date": "2025-03-20",
-      "duration": 20,
-      "distance": 2,
-      "avgSpeed": 6,
-      "heartRateRange": {
-        "min": 150,
-        "max": 170
-      },
-      "caloriesBurned": 325,
-      "strokeRate": null,
-      "notes": "First few days of rowing. Completed 20 min session."
-    }
-  ],
-  "bodyStats": [
-    {
-      "date": "2025-03-20",
-      "weight": 253.8,
-      "bmi": 33.6,
-      "bodyFat": 32.0,
-      "muscleMass": 34.0,
-      "bodyWater": 50.9,
-      "notes": "Initial measurement"
-    }
-  ]
-}`;
-            exportBox.value = sampleData;
-            // Show a welcome message
-            showToast('Welcome! Sample data has been provided. Click "Import Data" to load it.', 'warning');
-        } catch (e) {
-            console.error('Error setting sample data:', e);
-        }
-    }
-});
+              });

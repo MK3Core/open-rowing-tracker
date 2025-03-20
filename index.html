@@ -27,25 +27,6 @@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5>User Profile</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="profileForm">
-                            <div class="mb-3">
-                                <label for="weight" class="form-label">Current Weight (lbs)</label>
-                                <input type="number" step="0.1" class="form-control" id="weight" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="bmi" class="form-label">Current BMI</label>
-                                <input type="number" step="0.1" class="form-control" id="bmi" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
                         <h5>Body Measurements</h5>
                     </div>
                     <div class="card-body">
@@ -56,11 +37,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="statsWeight" class="form-label">Weight (lbs)</label>
-                                <input type="number" step="0.1" class="form-control" id="statsWeight">
+                                <input type="number" step="0.1" class="form-control" id="statsWeight" required>
                             </div>
                             <div class="mb-3">
                                 <label for="statsBmi" class="form-label">BMI</label>
-                                <input type="number" step="0.1" class="form-control" id="statsBmi">
+                                <input type="number" step="0.1" class="form-control" id="statsBmi" required>
                             </div>
                             <div class="mb-3">
                                 <label for="bodyFat" class="form-label">Body Fat %</label>
@@ -136,20 +117,30 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="calories" class="form-label">Calories Burned</label>
-                                        <input type="number" class="form-control" id="calories" required>
+                                        <label for="intensityDisplay" class="form-label">Intensity Level (auto)</label>
+                                        <input type="text" class="form-control" id="intensityDisplay" readonly>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="calories" class="form-label">Calories Burned (auto)</label>
+                                        <input type="number" class="form-control" id="calories" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="strokeRate" class="form-label">Stroke Rate (SPM) (optional)</label>
                                         <input type="number" class="form-control" id="strokeRate">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="notes" class="form-label">Session Notes</label>
-                                <textarea class="form-control" id="notes" rows="2"></textarea>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="notes" class="form-label">Session Notes</label>
+                                        <textarea class="form-control" id="notes" rows="1"></textarea>
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-success">Add Session</button>
                         </form>
@@ -265,7 +256,10 @@
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="toast.js"></script>
     <script src="tracker.js"></script>
     <script src="app.js"></script>
 </body>

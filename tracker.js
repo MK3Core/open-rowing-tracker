@@ -26,21 +26,82 @@ class RowingTracker {
   }
   
   // Add a new rowing session
-  addSession(date, duration, distance, avgSpeed, hrMin, hrMax, calories, strokeRate, notes) {
-    const sessionData = {
-      date: date || new Date().toISOString().split('T')[0],
-      duration: parseFloat(duration),
-      distance: parseFloat(distance),
-      avgSpeed: parseFloat(avgSpeed),
-      heartRateRange: { min: parseInt(hrMin), max: parseInt(hrMax) },
-      caloriesBurned: parseInt(calories),
-      strokeRate: strokeRate ? parseInt(strokeRate) : null,
-      notes: notes
+addSession(date, duration, distance, avgSpeed, heartRate, calories, strokeRate, notes) {
+  const sessionData = {
+    date: date || new Date().toISOString().split('T')[0],
+    duration: parseFloat(duration),
+    distance: parseFloat(distance),
+    avgSpeed: parseFloat(avgSpeed),
+    heartRate: heartRate ? parseInt(heartRate) : null,
+    caloriesBurned: parseInt(calories),
+    strokeRate: strokeRate ? parseInt(strokeRate) : null,
+    notes: notes
+  };
+  
+  this.sessions.push(sessionData);
+  return sessionData;
+}
+
+// Update the getTotalStats method in the RowingTracker class to handle the new heart rate field
+// Replace this in tracker.js
+
+// Calculate total stats across all sessions
+getTotalStats() {
+  if (this.sessions.length === 0) return "No sessions recorded yet.";
+  
+  // Filter out sessions with no heart rate for heart rate calculation
+  const sessionsWithHeartRate = this.sessions.filter(session => session.heartRate !== null);
+  const avgHeartRate = sessionsWithHeartRate.length > 0 
+    ? sessionsWithHeartRate.reduce((sum, session) => sum + session.heartRate, 0) / sessionsWithHeartRate.length
+    : 0;
+  
+  return {
+    totalSessions: this.sessions.length,
+    totalDuration: this.sessions.reduce((sum, session) => sum + session.duration, 0),
+    totalDistance: this.sessions.reduce((sum, session) => sum + session.distance, 0),
+    totalCalories: this.sessions.reduce((sum, session) => sum + session.caloriesBurned, 0),
+    avgSpeed: this.sessions.reduce((sum, session) => sum + session.avgSpeed, 0) / this.sessions.length,
+    avgHeartRate: avgHeartRate
+  };
+}
+
+// Update the getProgressMetrics method to handle the new heart rate field
+// Replace this in tracker.js
+
+// Get progress metrics
+getProgressMetrics() {
+  if (this.sessions.length < 2) return "Need at least 2 sessions to track progress.";
+  
+  const firstSession = this.sessions[0];
+  const lastSession = this.sessions[this.sessions.length - 1];
+  
+  // Calculate heart rate change only if both sessions have heart rate data
+  let heartRateChange = null;
+  if (firstSession.heartRate !== null && lastSession.heartRate !== null) {
+    heartRateChange = {
+      value: (lastSession.heartRate - firstSession.heartRate).toFixed(0)
     };
-    
-    this.sessions.push(sessionData);
-    return sessionData;
   }
+  
+  return {
+    durationChange: {
+      value: lastSession.duration - firstSession.duration,
+      percent: ((lastSession.duration - firstSession.duration) / firstSession.duration * 100).toFixed(1)
+    },
+    speedChange: {
+      value: (lastSession.avgSpeed - firstSession.avgSpeed).toFixed(2),
+      percent: ((lastSession.avgSpeed - firstSession.avgSpeed) / firstSession.avgSpeed * 100).toFixed(1)
+    },
+    distanceChange: {
+      value: (lastSession.distance - firstSession.distance).toFixed(2),
+      percent: ((lastSession.distance - firstSession.distance) / firstSession.distance * 100).toFixed(1)
+    },
+    heartRateChange: heartRateChange,
+    totalSessions: this.sessions.length,
+    daysBetween: this.daysBetween(new Date(firstSession.date), new Date(lastSession.date)),
+    totalDistance: this.sessions.reduce((sum, session) => sum + session.distance, 0).toFixed(2)
+  };
+}
   
   // Add body stats measurement
   addBodyStats(date, weight, bmi, bodyFat, muscleMass, bodyWater, notes) {

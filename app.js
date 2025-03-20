@@ -216,50 +216,52 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast('Body measurements added successfully!');
     });
 
-    // Session form submission
-sessionForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Check if we have body stats before allowing session submission
-    if (!tracker.getLatestBodyStats()) {
-        showToast('Please add body measurements before recording a session', 'warning');
-        return;
-    }
-    
-    const date = document.getElementById('date').value;
-    const duration = document.getElementById('duration').value;
-    const distance = document.getElementById('distance').value;
-    const avgSpeed = document.getElementById('avgSpeed').value;
-    const heartRate = document.getElementById('heartRate').value || null; // Now optional
-    const calories = document.getElementById('calories').value; // Auto-calculated
-    const strokeRate = document.getElementById('strokeRate').value || null;
-    const notes = document.getElementById('notes').value;
-    
-    // Add intensity info to notes
-    const intensityDisplay = document.getElementById('intensityDisplay').value;
-    const updatedNotes = notes ? `${notes} [${intensityDisplay}]` : `[${intensityDisplay}]`;
-    
-    // Call the modified tracker method (to be updated in tracker.js)
-    tracker.addSession(date, duration, distance, avgSpeed, heartRate, calories, strokeRate, updatedNotes);
-    saveData();
-    refreshUI();
-    sessionForm.reset();
-    document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('intensityDisplay').value = '';
-    
-    showToast('Session added successfully!');
-});
+    // Session form submission - UPDATED for single heart rate
+    sessionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Check if we have body stats before allowing session submission
+        if (!tracker.getLatestBodyStats()) {
+            showToast('Please add body measurements before recording a session', 'warning');
+            return;
+        }
+        
+        const date = document.getElementById('date').value;
+        const duration = document.getElementById('duration').value;
+        const distance = document.getElementById('distance').value;
+        const avgSpeed = document.getElementById('avgSpeed').value;
+        const heartRate = document.getElementById('heartRate').value || null; // Optional heart rate
+        const calories = document.getElementById('calories').value; // Auto-calculated
+        const strokeRate = document.getElementById('strokeRate').value || null;
+        const notes = document.getElementById('notes').value;
+        
+        // Add intensity info to notes
+        const intensityDisplay = document.getElementById('intensityDisplay').value;
+        const updatedNotes = notes ? `${notes} [${intensityDisplay}]` : `[${intensityDisplay}]`;
+        
+        tracker.addSession(date, duration, distance, avgSpeed, heartRate, calories, strokeRate, updatedNotes);
+        saveData();
+        refreshUI();
+        sessionForm.reset();
+        document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('intensityDisplay').value = '';
+        
+        showToast('Session added successfully!');
+    });
 
     // Export button click
     exportBtn.addEventListener('click', function() {
         exportBox.value = tracker.exportData();
         exportBox.select();
+        document.getElementById('exportBoxContainer').classList.add('show');
         showToast('Data exported. Copy to save it.');
     });
 
     // Import button click
     importBtn.addEventListener('click', function() {
         console.log('Import button clicked');
+        
+        document.getElementById('exportBoxContainer').classList.add('show');
         
         if (exportBox.value.trim() === '') {
             showToast('Please paste data to import first!', 'warning');
@@ -450,7 +452,7 @@ sessionForm.addEventListener('submit', function(e) {
         if (typeof progressStats === 'string') {
             progressStatsEl.innerHTML = `<p>${progressStats}</p>`;
         } else {
-            progressStatsEl.innerHTML = `
+            let progressHtml = `
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Total Sessions:</strong> ${progressStats.totalSessions}</p>
@@ -467,15 +469,24 @@ sessionForm.addEventListener('submit', function(e) {
                             <span class="${progressStats.durationChange.value > 0 ? 'text-success' : 'text-danger'}">
                                 ${progressStats.durationChange.value > 0 ? '+' : ''}${progressStats.durationChange.value} min (${progressStats.durationChange.percent}%)
                             </span>
-                        </p>
+                        </p>`;
+                        
+            // Only show heart rate change if we have the data
+            if (progressStats.heartRateChange) {
+                progressHtml += `
                         <p><strong>Heart Rate Change:</strong> 
                             <span class="${progressStats.heartRateChange.value < 0 ? 'text-success' : 'text-danger'}">
                                 ${progressStats.heartRateChange.value > 0 ? '+' : ''}${progressStats.heartRateChange.value} BPM
                             </span>
-                        </p>
+                        </p>`;
+            }
+            
+            progressHtml += `
                     </div>
                 </div>
             `;
+            
+            progressStatsEl.innerHTML = progressHtml;
         }
         
         // Update total stats
@@ -490,9 +501,12 @@ sessionForm.addEventListener('submit', function(e) {
                 <p><strong>Total Duration:</strong> ${totalStats.totalDuration.toFixed(0)} minutes</p>
                 <p><strong>Total Distance:</strong> ${totalStats.totalDistance.toFixed(2)} miles</p>
                 <p><strong>Total Calories:</strong> ${totalStats.totalCalories.toFixed(0)}</p>
-                <p><strong>Average Speed:</strong> ${totalStats.avgSpeed.toFixed(2)} mph</p>
-                <p><strong>Average Heart Rate:</strong> ${totalStats.avgHeartRate.toFixed(0)} BPM</p>
-            `;
+                <p><strong>Average Speed:</strong> ${totalStats.avgSpeed.toFixed(2)} mph</p>`;
+                
+            // Only show average heart rate if we have data
+            if (totalStats.avgHeartRate > 0) {
+                statsHTML += `<p><strong>Average Heart Rate:</strong> ${totalStats.avgHeartRate.toFixed(0)} BPM</p>`;
+            }
             
             // Add current stats if available
             if (latestStats) {
@@ -654,7 +668,7 @@ sessionForm.addEventListener('submit', function(e) {
         }
     }
     
-    // Update sessions list section
+    // Update sessions list section - UPDATED for single heart rate
     function updateSessionsList() {
         const sessionsListEl = document.getElementById('sessionsList');
         const sessions = tracker.getAllSessions();
@@ -667,29 +681,26 @@ sessionForm.addEventListener('submit', function(e) {
             sessions.forEach((session, index) => {
                 const date = new Date(session.date);
                 const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const avgHR = Math.round((session.heartRateRange.min + session.heartRateRange.max) / 2);
                 
                 sessionsHtml += `
                     <div class="card session-card">
                         <div class="card-body">
                             <h5 class="card-title">${formattedDate}</h5>
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <p class="mb-1"><strong>Duration:</strong> ${session.duration} min</p>
                                     <p class="mb-1"><strong>Distance:</strong> ${session.distance} mi</p>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <p class="mb-1"><strong>Speed:</strong> ${session.avgSpeed} mph</p>
-                                    <p class="mb-1"><strong>HR:</strong> ${session.heartRateRange.min}-${session.heartRateRange.max} BPM</p>
+                                    <p class="mb-1"><strong>HR:</strong> ${session.heartRate ? session.heartRate + ' BPM' : 'N/A'}</p>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <p class="mb-1"><strong>Calories:</strong> ${session.caloriesBurned}</p>
                                     <p class="mb-1"><strong>SPM:</strong> ${session.strokeRate || 'N/A'}</p>
                                 </div>
-                                <div class="col-md-3">
-                                    ${session.notes ? `<p class="mb-1"><em>${session.notes}</em></p>` : ''}
-                                </div>
                             </div>
+                            ${session.notes ? `<p class="mb-1 mt-2"><em>${session.notes}</em></p>` : ''}
                         </div>
                     </div>
                 `;
@@ -709,4 +720,13 @@ sessionForm.addEventListener('submit', function(e) {
 
     // Initial UI refresh
     refreshUI();
-              });
+    
+    // Add event handlers for export box UI
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        document.getElementById('exportBoxContainer').classList.add('show');
+    });
+    
+    document.getElementById('importBtn').addEventListener('click', function() {
+        document.getElementById('exportBoxContainer').classList.add('show');
+    });
+});

@@ -76,11 +76,209 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listener for theme toggle
     toggleSwitch.addEventListener('change', switchTheme);
     
-    // ====== CALORIE CALCULATOR ======
+    // ====== ROWING CALCULATOR FUNCTIONS ======
     
-    // Add event listeners for auto-calculating calories
-    document.getElementById('duration').addEventListener('input', calculateCalories);
-    document.getElementById('avgSpeed').addEventListener('input', calculateCalories);
+    // DOM Elements for rowing calculator
+    const durationInput = document.getElementById('duration');
+    const distanceInput = document.getElementById('distance');
+    const speedInput = document.getElementById('avgSpeed');
+    const caloriesInput = document.getElementById('calories');
+    const intensityDisplay = document.getElementById('intensityDisplay');
+    
+    // Initialize rowing calculator
+    function initRowingCalculator() {
+        // Set up event listeners for all three inputs
+        durationInput.addEventListener('input', handleInputChange);
+        distanceInput.addEventListener('input', handleInputChange);
+        speedInput.addEventListener('input', handleInputChange);
+        
+        // Add data attributes to track which field was last modified
+        durationInput.setAttribute('data-last-modified', 'false');
+        distanceInput.setAttribute('data-last-modified', 'false');
+        speedInput.setAttribute('data-last-modified', 'false');
+        
+        // Add auto-calculate indicators
+        addAutoCalculateIndicators();
+    }
+    
+    // Handler for input changes
+    function handleInputChange(event) {
+        // Reset last-modified flags
+        resetLastModified();
+        
+        // Set the current input as the last modified
+        event.target.setAttribute('data-last-modified', 'true');
+        
+        // Calculate missing values
+        calculateMissingValues();
+        
+        // Update indicators
+        updateCalculationIndicators();
+        
+        // Calculate calories if we have speed and duration
+        if (speedInput.value && durationInput.value) {
+            calculateCalories();
+        }
+    }
+    
+    // Function to reset all last-modified flags
+    function resetLastModified() {
+        durationInput.setAttribute('data-last-modified', 'false');
+        distanceInput.setAttribute('data-last-modified', 'false');
+        speedInput.setAttribute('data-last-modified', 'false');
+    }
+    
+    // Calculate missing field based on the other two
+    function calculateMissingValues() {
+        // Get current values (parseFloat returns NaN if not a valid number)
+        const duration = parseFloat(durationInput.value);
+        const distance = parseFloat(distanceInput.value);
+        const speed = parseFloat(speedInput.value);
+        
+        // Check which field was last modified
+        const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
+        const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
+        const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
+        
+        // Calculate the missing value
+        // If distance and speed are valid, calculate duration
+        if (!isNaN(distance) && !isNaN(speed) && speed > 0 && (distanceLastModified || speedLastModified)) {
+            // duration = distance / speed * 60 (convert to minutes)
+            const calculatedDuration = (distance / speed) * 60;
+            durationInput.value = calculatedDuration.toFixed(1);
+        }
+        // If duration and speed are valid, calculate distance
+        else if (!isNaN(duration) && !isNaN(speed) && (durationLastModified || speedLastModified)) {
+            // distance = duration / 60 * speed (convert minutes to hours)
+            const calculatedDistance = (duration / 60) * speed;
+            distanceInput.value = calculatedDistance.toFixed(2);
+        }
+        // If duration and distance are valid, calculate speed
+        else if (!isNaN(duration) && !isNaN(distance) && duration > 0 && (durationLastModified || distanceLastModified)) {
+            // speed = distance / (duration / 60) (convert minutes to hours)
+            const calculatedSpeed = distance / (duration / 60);
+            speedInput.value = calculatedSpeed.toFixed(2);
+        }
+    }
+    
+    // Add visual indicators showing which field will be auto-calculated
+    function addAutoCalculateIndicators() {
+        // Create styling for the auto-calculate indicators
+        const style = document.createElement('style');
+        style.textContent = `
+            .auto-calculate-indicator {
+                font-size: 0.8rem;
+                color: #6c757d;
+                margin-top: 0.25rem;
+                display: none;
+            }
+            
+            .form-label.auto-calculate-active {
+                color: #0d6efd;
+                font-weight: bold;
+            }
+            
+            .form-control.auto-calculate-target {
+                background-color: rgba(13, 110, 253, 0.05);
+                border-color: #0d6efd;
+            }
+            
+            [data-theme="dark"] .form-control.auto-calculate-target {
+                background-color: rgba(13, 110, 253, 0.15);
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Get labels
+        const durationLabel = document.querySelector('label[for="duration"]');
+        const distanceLabel = document.querySelector('label[for="distance"]');
+        const speedLabel = document.querySelector('label[for="avgSpeed"]');
+        
+        // Create indicator elements
+        const durationIndicator = document.createElement('div');
+        durationIndicator.className = 'auto-calculate-indicator';
+        durationIndicator.id = 'durationIndicator';
+        durationIndicator.textContent = 'Will auto-calculate';
+        
+        const distanceIndicator = document.createElement('div');
+        distanceIndicator.className = 'auto-calculate-indicator';
+        distanceIndicator.id = 'distanceIndicator';
+        distanceIndicator.textContent = 'Will auto-calculate';
+        
+        const speedIndicator = document.createElement('div');
+        speedIndicator.className = 'auto-calculate-indicator';
+        speedIndicator.id = 'speedIndicator';
+        speedIndicator.textContent = 'Will auto-calculate';
+        
+        // Add indicators after inputs
+        document.getElementById('duration').parentNode.appendChild(durationIndicator);
+        document.getElementById('distance').parentNode.appendChild(distanceIndicator);
+        document.getElementById('avgSpeed').parentNode.appendChild(speedIndicator);
+        
+        // Add event listeners to update indicators
+        durationInput.addEventListener('focus', updateCalculationIndicators);
+        distanceInput.addEventListener('focus', updateCalculationIndicators);
+        speedInput.addEventListener('focus', updateCalculationIndicators);
+    }
+    
+    // Update visual indicators
+    function updateCalculationIndicators() {
+        // Get indicator elements
+        const durationIndicator = document.getElementById('durationIndicator');
+        const distanceIndicator = document.getElementById('distanceIndicator');
+        const speedIndicator = document.getElementById('speedIndicator');
+        
+        // Get labels
+        const durationLabel = document.querySelector('label[for="duration"]');
+        const distanceLabel = document.querySelector('label[for="distance"]');
+        const speedLabel = document.querySelector('label[for="avgSpeed"]');
+        
+        // Reset all indicators and styling
+        [durationIndicator, distanceIndicator, speedIndicator].forEach(ind => {
+            if (ind) ind.style.display = 'none';
+        });
+        
+        [durationLabel, distanceLabel, speedLabel].forEach(label => {
+            if (label) label.classList.remove('auto-calculate-active');
+        });
+        
+        [durationInput, distanceInput, speedInput].forEach(input => {
+            if (input) input.classList.remove('auto-calculate-target');
+        });
+        
+        // Get current values
+        const duration = parseFloat(durationInput.value);
+        const distance = parseFloat(distanceInput.value);
+        const speed = parseFloat(speedInput.value);
+        
+        // Get last modified status
+        const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
+        const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
+        const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
+        
+        // Show indicators based on which fields are filled and last modified
+        
+        // If distance and speed are filled/modified, show duration will be calculated
+        if (!isNaN(distance) && !isNaN(speed) && speed > 0 && (distanceLastModified || speedLastModified)) {
+            durationIndicator.style.display = 'block';
+            durationLabel.classList.add('auto-calculate-active');
+            durationInput.classList.add('auto-calculate-target');
+        }
+        // If duration and speed are filled/modified, show distance will be calculated
+        else if (!isNaN(duration) && !isNaN(speed) && (durationLastModified || speedLastModified)) {
+            distanceIndicator.style.display = 'block';
+            distanceLabel.classList.add('auto-calculate-active');
+            distanceInput.classList.add('auto-calculate-target');
+        }
+        // If duration and distance are filled/modified, show speed will be calculated
+        else if (!isNaN(duration) && !isNaN(distance) && duration > 0 && (durationLastModified || distanceLastModified)) {
+            speedIndicator.style.display = 'block';
+            speedLabel.classList.add('auto-calculate-active');
+            speedInput.classList.add('auto-calculate-target');
+        }
+    }
+    
+    // ====== CALORIE CALCULATOR ======
     
     // Function to determine MET value based on speed
     function getMETValue(speed) {
@@ -98,161 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Default value if somehow none of the conditions are met
         return 5.8;
     }
-
-    // ====== AUTOCALC FOR ROWING SESSION ======
-
-// Store these as global variables inside the DOMContentLoaded function
-let durationInput, distanceInput, speedInput;
-
-// Function to initialize rowing calculator
-function initRowingCalculator() {
-    console.log("initRowingCalculator function is running");
-    // Get form input elements
-    durationInput = document.getElementById('duration');
-    distanceInput = document.getElementById('distance');
-    speedInput = document.getElementById('avgSpeed');
-    
-    // Set up event listeners for all three inputs
-    durationInput.addEventListener('input', handleInputChange);
-    distanceInput.addEventListener('input', handleInputChange);
-    speedInput.addEventListener('input', handleInputChange);
-    
-    // Add a data attribute to track which field was last modified
-    durationInput.setAttribute('data-last-modified', 'false');
-    distanceInput.setAttribute('data-last-modified', 'false');
-    speedInput.setAttribute('data-last-modified', 'false');
-}
-
-// Handler for input changes
-function handleInputChange(event) {
-    console.log("Input changed:", event.target.id);
-    resetLastModified();
-    event.target.setAttribute('data-last-modified', 'true');
-    calculateMissingField();
-}
-
-// Function to reset all last-modified flags
-function resetLastModified() {
-    durationInput.setAttribute('data-last-modified', 'false');
-    distanceInput.setAttribute('data-last-modified', 'false');
-    speedInput.setAttribute('data-last-modified', 'false');
-}
-
-// Main calculation function
-function calculateMissingField() {
-    console.log("calculateMissingField was triggered");
-    // Get current values
-    const duration = parseFloat(durationInput.value);
-    const distance = parseFloat(distanceInput.value);
-    const speed = parseFloat(speedInput.value);
-    
-    console.log("Values:", { duration, distance, speed });
-    
-    // Check which field was NOT last modified
-    const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
-    const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
-    const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
-    
-    console.log("Last modified:", { durationLastModified, distanceLastModified, speedLastModified });
-    
-    // Only calculate if we have all three values
-    if (isNaN(duration) || isNaN(distance) || isNaN(speed)) {
-        console.log("Not enough valid values to calculate");
-        return;
-    }
-
-// Function to add visual indicators showing which field will be auto-calculated
-function addAutoCalculateIndicators() {
-    console.log("addAutoCalculateIndicators function is running");
-    // Create styling for the auto-calculate indicators
-    const style = document.createElement('style');
-    style.textContent = `
-        .auto-calculate-indicator {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-        
-        .form-label.auto-calculate-active {
-            color: #0d6efd;
-            font-weight: bold;
-        }
-        
-        .form-control.auto-calculate-target {
-            background-color: rgba(13, 110, 253, 0.05);
-            border-color: #0d6efd;
-        }
-        
-        [data-theme="dark"] .form-control.auto-calculate-target {
-            background-color: rgba(13, 110, 253, 0.15);
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // Add indicator messages below each input
-    const durationLabel = document.querySelector('label[for="duration"]');
-    const distanceLabel = document.querySelector('label[for="distance"]');
-    const speedLabel = document.querySelector('label[for="avgSpeed"]');
-    
-    // Create indicator elements
-    const durationIndicator = document.createElement('div');
-    durationIndicator.className = 'auto-calculate-indicator';
-    durationIndicator.id = 'durationIndicator';
-    durationIndicator.textContent = 'Will auto-calculate';
-    durationIndicator.style.display = 'none';
-    
-    const distanceIndicator = document.createElement('div');
-    distanceIndicator.className = 'auto-calculate-indicator';
-    distanceIndicator.id = 'distanceIndicator';
-    distanceIndicator.textContent = 'Will auto-calculate';
-    distanceIndicator.style.display = 'none';
-    
-    const speedIndicator = document.createElement('div');
-    speedIndicator.className = 'auto-calculate-indicator';
-    speedIndicator.id = 'speedIndicator';
-    speedIndicator.textContent = 'Will auto-calculate';
-    speedIndicator.style.display = 'none';
-    
-    // Add indicators after labels
-    document.getElementById('duration').parentNode.appendChild(durationIndicator);
-    document.getElementById('distance').parentNode.appendChild(distanceIndicator);
-    document.getElementById('avgSpeed').parentNode.appendChild(speedIndicator);
-    
-    // Add event listeners to update indicators
-    document.getElementById('duration').addEventListener('focus', updateIndicators);
-    document.getElementById('distance').addEventListener('focus', updateIndicators);
-    document.getElementById('avgSpeed').addEventListener('focus', updateIndicators);
-    
-    function updateIndicators() {
-        // Reset all indicators
-        [durationIndicator, distanceIndicator, speedIndicator].forEach(ind => ind.style.display = 'none');
-        [durationLabel, distanceLabel, speedLabel].forEach(label => label.classList.remove('auto-calculate-active'));
-        [document.getElementById('duration'), document.getElementById('distance'), document.getElementById('avgSpeed')]
-            .forEach(input => input.classList.remove('auto-calculate-target'));
-        
-        // Get current focus state
-        const durationFocused = document.activeElement === document.getElementById('duration');
-        const distanceFocused = document.activeElement === document.getElementById('distance');
-        const speedFocused = document.activeElement === document.getElementById('avgSpeed');
-        
-        // If two fields are focused/modified, show indicator for the third
-        if (durationFocused && distanceFocused) {
-            speedIndicator.style.display = 'block';
-            speedLabel.classList.add('auto-calculate-active');
-            document.getElementById('avgSpeed').classList.add('auto-calculate-target');
-        } 
-        else if (durationFocused && speedFocused) {
-            distanceIndicator.style.display = 'block';
-            distanceLabel.classList.add('auto-calculate-active');
-            document.getElementById('distance').classList.add('auto-calculate-target');
-        } 
-        else if (distanceFocused && speedFocused) {
-            durationIndicator.style.display = 'block';
-            durationLabel.classList.add('auto-calculate-active');
-            document.getElementById('duration').classList.add('auto-calculate-target');
-        }
-    }
-}
     
     // Function to get intensity level description
     function getIntensityDescription(speed) {
@@ -279,15 +322,15 @@ function addAutoCalculateIndicators() {
         }
         
         const weight = latestStats.weight; // in lbs
-        const duration = parseFloat(document.getElementById('duration').value); // in minutes
-        const speed = parseFloat(document.getElementById('avgSpeed').value); // in mph
+        const duration = parseFloat(durationInput.value); // in minutes
+        const speed = parseFloat(speedInput.value); // in mph
         
         if (weight && duration && speed) {
             // Determine MET value based on speed
             const metValue = getMETValue(speed);
             
             // Update intensity display
-            document.getElementById('intensityDisplay').value = getIntensityDescription(speed);
+            intensityDisplay.value = getIntensityDescription(speed);
             
             // Convert weight from lbs to kg
             const weightKg = weight * 0.45359237;
@@ -296,14 +339,9 @@ function addAutoCalculateIndicators() {
             const caloriesPerMinute = (metValue * weightKg * 3.5) / 200;
             const totalCalories = Math.round(caloriesPerMinute * duration);
             
-            document.getElementById('calories').value = totalCalories;
+            caloriesInput.value = totalCalories;
         }
     }
-
-    // Initialize rowing calculator
-    console.log("About to initialize rowing calculator");
-    initRowingCalculator();
-    addAutoCalculateIndicators();
     
     // ====== DATA LOADING & INITIALIZATION ======
     
@@ -311,9 +349,8 @@ function addAutoCalculateIndicators() {
     document.getElementById('date').valueAsDate = new Date();
     document.getElementById('statsDate').valueAsDate = new Date();
     
-    // Try to load data from user's JSON file or localStorage
+    // Try to load data from localStorage
     function tryLoadingData() {
-        // First, try localStorage
         const savedData = localStorage.getItem('rowingTrackerData');
         if (savedData) {
             try {
@@ -363,8 +400,6 @@ function addAutoCalculateIndicators() {
         tracker.updateProfile(weight, bmi);
         
         // Recalculate calories if form fields are filled
-        const speedInput = document.getElementById('avgSpeed');
-        const durationInput = document.getElementById('duration');
         if (speedInput.value && durationInput.value) {
             calculateCalories();
         }
@@ -376,7 +411,7 @@ function addAutoCalculateIndicators() {
         showToast('Body measurements added successfully!');
     });
 
-    // Session form submission - UPDATED for single heart rate
+    // Session form submission
     sessionForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -387,28 +422,32 @@ function addAutoCalculateIndicators() {
         }
         
         const date = document.getElementById('date').value;
-        const duration = document.getElementById('duration').value;
-        const distance = document.getElementById('distance').value;
-        const avgSpeed = document.getElementById('avgSpeed').value;
+        const duration = durationInput.value;
+        const distance = distanceInput.value;
+        const avgSpeed = speedInput.value;
         const heartRate = document.getElementById('heartRate').value || null; // Optional heart rate
-        const calories = document.getElementById('calories').value; // Auto-calculated
+        const calories = caloriesInput.value; // Auto-calculated
         const strokeRate = document.getElementById('strokeRate').value || null;
         const notes = document.getElementById('notes').value;
         
         // Add intensity info to notes
-        const intensityDisplay = document.getElementById('intensityDisplay').value;
-        const updatedNotes = notes ? `${notes} [${intensityDisplay}]` : `[${intensityDisplay}]`;
+        const intensity = intensityDisplay.value;
+        const updatedNotes = notes ? `${notes} [${intensity}]` : `[${intensity}]`;
         
         tracker.addSession(date, duration, distance, avgSpeed, heartRate, calories, strokeRate, updatedNotes);
         saveData();
         refreshUI();
+        
+        // Reset form
         sessionForm.reset();
+        
         // Reset auto-calculation indicators
         document.querySelectorAll('.auto-calculate-indicator').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.auto-calculated').forEach(el => el.classList.remove('auto-calculated'));
-        // Reset the other elements
+        document.querySelectorAll('.form-label').forEach(el => el.classList.remove('auto-calculate-active'));
+        document.querySelectorAll('.form-control').forEach(el => el.classList.remove('auto-calculate-target'));
+        
+        // Reset date to today
         document.getElementById('date').valueAsDate = new Date();
-        document.getElementById('intensityDisplay').value = '';
         
         showToast('Session added successfully!');
     });
@@ -423,8 +462,6 @@ function addAutoCalculateIndicators() {
 
     // Import button click
     importBtn.addEventListener('click', function() {
-        console.log('Import button clicked');
-        
         document.getElementById('exportBoxContainer').classList.add('show');
         
         if (exportBox.value.trim() === '') {
@@ -699,7 +736,7 @@ function addAutoCalculateIndicators() {
                     <tr>
                         <td>${week.week}</td>
                         <td>${week.sessions}</td>
-                        <td>${week.totalDuration} min</td>
+                        <td>${week.totalDuration.toFixed(0)} min</td>
                         <td>${week.totalDistance} mi</td>
                         <td>${week.totalCalories}</td>
                     </tr>
@@ -832,7 +869,7 @@ function addAutoCalculateIndicators() {
         }
     }
     
-    // Update sessions list section - UPDATED for single heart rate
+    // Update sessions list section
     function updateSessionsList() {
         const sessionsListEl = document.getElementById('sessionsList');
         const sessions = tracker.getAllSessions();
@@ -842,14 +879,14 @@ function addAutoCalculateIndicators() {
         } else {
             let sessionsHtml = '<div style="max-height: 400px; overflow-y: auto;">';
             
-            sessions.forEach((session, index) => {
+            sessions.forEach((session) => {
                 const date = new Date(session.date);
                 const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 
                 sessionsHtml += `
-                    <div class="card session-card">
-                        <div class="card-body">
-                            <h5 class="card-title">${formattedDate}</h5>
+                    <div class="card session-card mb-2">
+                        <div class="card-body py-2">
+                            <h6 class="card-title">${formattedDate}</h6>
                             <div class="row">
                                 <div class="col-md-4">
                                     <p class="mb-1"><strong>Duration:</strong> ${session.duration} min</p>
@@ -864,7 +901,7 @@ function addAutoCalculateIndicators() {
                                     <p class="mb-1"><strong>SPM:</strong> ${session.strokeRate || 'N/A'}</p>
                                 </div>
                             </div>
-                            ${session.notes ? `<p class="mb-1 mt-2"><em>${session.notes}</em></p>` : ''}
+                            ${session.notes ? `<p class="mb-0 small fst-italic">${session.notes}</p>` : ''}
                         </div>
                     </div>
                 `;
@@ -881,16 +918,26 @@ function addAutoCalculateIndicators() {
     function saveData() {
         localStorage.setItem('rowingTrackerData', tracker.exportData());
     }
+    
+    // Set up collapsible elements for import/export box
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = document.querySelector(this.getAttribute('data-bs-target'));
+            if (target) {
+                target.classList.toggle('show');
+                
+                // Update arrow icon
+                const arrow = this.querySelector('.small');
+                if (arrow) {
+                    arrow.textContent = target.classList.contains('show') ? '⯅' : '⯆';
+                }
+            }
+        });
+    });
 
+    // Initialize rowing calculator
+    initRowingCalculator();
+    
     // Initial UI refresh
     refreshUI();
-    
-    // Add event handlers for export box UI
-    document.getElementById('exportBtn').addEventListener('click', function() {
-        document.getElementById('exportBoxContainer').classList.add('show');
-    });
-    
-    document.getElementById('importBtn').addEventListener('click', function() {
-        document.getElementById('exportBoxContainer').classList.add('show');
-    });
 });

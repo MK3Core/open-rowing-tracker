@@ -840,7 +840,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const sortedStats = [...bodyStats].sort((a, b) => new Date(b.date) - new Date(a.date));
             
             sortedStats.forEach(stat => {
-                const date = new Date(stat.date);
+                // Fix for time/date issue, grabbing timezone from local browser
+                const [year, month, day] = stat.date.split('-').map(num => parseInt(num, 10));
+                const date = new Date(year, month - 1, day); // month is 0-indexed in JS Date
                 const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 
                 statsHtml += `

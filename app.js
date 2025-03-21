@@ -101,88 +101,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ====== AUTOCALC FOR ROWING SESSION ======
 
+// Store these as global variables inside the DOMContentLoaded function
+let durationInput, distanceInput, speedInput;
+
+// Function to initialize rowing calculator
 function initRowingCalculator() {
     console.log("initRowingCalculator function is running");
     // Get form input elements
-    const durationInput = document.getElementById('duration');
-    const distanceInput = document.getElementById('distance');
-    const speedInput = document.getElementById('avgSpeed');
+    durationInput = document.getElementById('duration');
+    distanceInput = document.getElementById('distance');
+    speedInput = document.getElementById('avgSpeed');
     
     // Set up event listeners for all three inputs
-    durationInput.addEventListener('input', calculateMissingField);
-    distanceInput.addEventListener('input', calculateMissingField);
-    speedInput.addEventListener('input', calculateMissingField);
+    durationInput.addEventListener('input', handleInputChange);
+    distanceInput.addEventListener('input', handleInputChange);
+    speedInput.addEventListener('input', handleInputChange);
     
     // Add a data attribute to track which field was last modified
     durationInput.setAttribute('data-last-modified', 'false');
     distanceInput.setAttribute('data-last-modified', 'false');
     speedInput.setAttribute('data-last-modified', 'false');
-    
-    // Update the data attribute when a field is modified
-    durationInput.addEventListener('focus', function() {
-        resetLastModified();
-        this.setAttribute('data-last-modified', 'true');
-    });
-    
-    distanceInput.addEventListener('focus', function() {
-        resetLastModified();
-        this.setAttribute('data-last-modified', 'true');
-    });
-    
-    speedInput.addEventListener('focus', function() {
-        resetLastModified();
-        this.setAttribute('data-last-modified', 'true');
-    });
-    
-    // Function to reset all last-modified flags
-    function resetLastModified() {
-        durationInput.setAttribute('data-last-modified', 'false');
-        distanceInput.setAttribute('data-last-modified', 'false');
-        speedInput.setAttribute('data-last-modified', 'false');
-    }
-    
-    // Main calculation function
-    function calculateMissingField() {
-        console.log("calculateMissingField was triggered");
-        // Get current values
-        const duration = parseFloat(durationInput.value);
-        const distance = parseFloat(distanceInput.value);
-        const speed = parseFloat(speedInput.value);
-        
-        // Check which field was NOT last modified
-        const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
-        const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
-        const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
-        
-        // Only calculate if we have at least two values
-        if (isNaN(duration) || isNaN(distance) || isNaN(speed)) {
-            return;
-        }
-        
-        // Determine which field to calculate based on which fields were modified
-        // If all three are filled but only two were modified, calculate the third
-        if (!durationLastModified && distanceLastModified && speedLastModified) {
-            // Calculate duration: time = distance / speed * 60 (converting hours to minutes)
-            const calculatedDuration = (distance / speed) * 60;
-            durationInput.value = calculatedDuration.toFixed(1);
-        } 
-        else if (durationLastModified && !distanceLastModified && speedLastModified) {
-            // Calculate distance: distance = speed * time / 60 (converting minutes to hours)
-            const calculatedDistance = (speed * duration) / 60;
-            distanceInput.value = calculatedDistance.toFixed(2);
-        } 
-        else if (durationLastModified && distanceLastModified && !speedLastModified) {
-            // Calculate speed: speed = distance / (time / 60) (converting minutes to hours)
-            const calculatedSpeed = distance / (duration / 60);
-            speedInput.value = calculatedSpeed.toFixed(2);
-        }
-        
-        // After calculation, recalculate calories as well if the speed has changed
-        if (window.calculateCalories && typeof window.calculateCalories === 'function') {
-            calculateCalories();
-        }
-    }
 }
+
+// Handler for input changes
+function handleInputChange(event) {
+    console.log("Input changed:", event.target.id);
+    resetLastModified();
+    event.target.setAttribute('data-last-modified', 'true');
+    calculateMissingField();
+}
+
+// Function to reset all last-modified flags
+function resetLastModified() {
+    durationInput.setAttribute('data-last-modified', 'false');
+    distanceInput.setAttribute('data-last-modified', 'false');
+    speedInput.setAttribute('data-last-modified', 'false');
+}
+
+// Main calculation function
+function calculateMissingField() {
+    console.log("calculateMissingField was triggered");
+    // Get current values
+    const duration = parseFloat(durationInput.value);
+    const distance = parseFloat(distanceInput.value);
+    const speed = parseFloat(speedInput.value);
+    
+    console.log("Values:", { duration, distance, speed });
+    
+    // Check which field was NOT last modified
+    const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
+    const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
+    const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
+    
+    console.log("Last modified:", { durationLastModified, distanceLastModified, speedLastModified });
+    
+    // Only calculate if we have all three values
+    if (isNaN(duration) || isNaN(distance) || isNaN(speed)) {
+        console.log("Not enough valid values to calculate");
+        return;
+    }
 
 // Function to add visual indicators showing which field will be auto-calculated
 function addAutoCalculateIndicators() {

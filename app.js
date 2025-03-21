@@ -276,11 +276,6 @@ function addAutoCalculateIndicators() {
         }
     }
 }
-
-    // Initialize rowing calculator
-    console.log("About to initialize rowing calculator");
-    initRowingCalculator();
-    addAutoCalculateIndicators();
     
     // Function to get intensity level description
     function getIntensityDescription(speed) {
@@ -327,6 +322,11 @@ function addAutoCalculateIndicators() {
             document.getElementById('calories').value = totalCalories;
         }
     }
+
+    // Initialize rowing calculator
+    console.log("About to initialize rowing calculator");
+    initRowingCalculator();
+    addAutoCalculateIndicators();
     
     // ====== DATA LOADING & INITIALIZATION ======
     

@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====== AUTOCALC FOR ROWING SESSION ======
 
 function initRowingCalculator() {
+    console.log("initRowingCalculator function is running");
     // Get form input elements
     const durationInput = document.getElementById('duration');
     const distanceInput = document.getElementById('distance');
@@ -142,6 +143,7 @@ function initRowingCalculator() {
     
     // Main calculation function
     function calculateMissingField() {
+        console.log("calculateMissingField was triggered");
         // Get current values
         const duration = parseFloat(durationInput.value);
         const distance = parseFloat(distanceInput.value);
@@ -184,6 +186,7 @@ function initRowingCalculator() {
 
 // Function to add visual indicators showing which field will be auto-calculated
 function addAutoCalculateIndicators() {
+    console.log("addAutoCalculateIndicators function is running");
     // Create styling for the auto-calculate indicators
     const style = document.createElement('style');
     style.textContent = `
@@ -274,14 +277,10 @@ function addAutoCalculateIndicators() {
     }
 }
 
-// Add to DOMContentLoaded event in app.js
-// document.addEventListener('DOMContentLoaded', function() {
-//     // Existing code...
-//     
-//     // Initialize rowing calculator
-//     initRowingCalculator();
-//     addAutoCalculateIndicators();
-// });
+    // Initialize rowing calculator
+    console.log("About to initialize rowing calculator");
+    initRowingCalculator();
+    addAutoCalculateIndicators();
     
     // Function to get intensity level description
     function getIntensityDescription(speed) {
@@ -334,10 +333,6 @@ function addAutoCalculateIndicators() {
     // Set today's date as default for date inputs
     document.getElementById('date').valueAsDate = new Date();
     document.getElementById('statsDate').valueAsDate = new Date();
-
-    // Initialize rowing calculator
-    initRowingCalculator();
-    addAutoCalculateIndicators();
     
     // Try to load data from user's JSON file or localStorage
     function tryLoadingData() {

@@ -291,3 +291,117 @@ input:checked + .slider:before {
         max-width: none !important;
     }
 }
+/* Session Planning UI Styles */
+.session-format {
+    background-color: var(--stats-container-bg);
+    padding: 10px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.session-tips {
+    background-color: rgba(13, 110, 253, 0.05);
+    border-left: 3px solid #0d6efd;
+}
+
+[data-theme="dark"] .session-tips {
+    background-color: rgba(13, 110, 253, 0.15);
+}
+
+/* Session analysis modal styles */
+.metric-card {
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.metric-status {
+    font-size: 2rem;
+    margin: 10px 0;
+}
+
+.on_target .metric-status {
+    color: #28a745;
+}
+
+.below_target .metric-status {
+    color: #ffc107;
+}
+
+.above_target .metric-status {
+    color: #fd7e14;
+}
+
+.metric-values {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.metric-values > div {
+    width: 100%;
+    text-align: center;
+    padding: 2px;
+}
+
+.metrics-feedback {
+    margin-top: 20px;
+}
+
+/* Timeline view for session plan */
+.session-timeline {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+}
+
+.timeline-segment {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.timeline-warmup {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.timeline-work {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.timeline-recovery {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.timeline-cooldown {
+    background-color: #e2e3e5;
+    color: #41464b;
+}
+
+[data-theme="dark"] .timeline-warmup {
+    background-color: rgba(209, 231, 221, 0.2);
+    color: #d1e7dd;
+}
+
+[data-theme="dark"] .timeline-work {
+    background-color: rgba(207, 226, 255, 0.2);
+    color: #cfe2ff;
+}
+
+[data-theme="dark"] .timeline-recovery {
+    background-color: rgba(248, 215, 218, 0.2);
+    color: #f8d7da;
+}
+
+[data-theme="dark"] .timeline-cooldown {
+    background-color: rgba(226, 227, 229, 0.2);
+    color: #e2e3e5;
+}

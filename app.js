@@ -1001,4 +1001,71 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial UI refresh
     refreshUI();
+    // Event listeners for session planner
+startSessionBtn.addEventListener('click', function() {
+    // Pre-fill the session form with recommended values
+    const nextSession = sessionPlanner.getNextSessionDetails();
+    
+    // Set date to today
+    document.getElementById('date').valueAsDate = new Date();
+    
+    // Set target duration (use the middle of the range)
+    const targetDuration = Math.floor((nextSession.durationMin + nextSession.durationMax) / 2);
+    durationInput.value = targetDuration;
+    
+    // Reset other fields to ensure calculator works properly
+    distanceInput.value = '';
+    speedInput.value = '';
+    
+    // Focus on the distance field so user can start entering their data
+    distanceInput.focus();
+    
+    // Scroll to session form
+    document.getElementById('sessionForm').scrollIntoView({ behavior: 'smooth' });
+});
+
+modifySessionBtn.addEventListener('click', function() {
+    // Simply scroll to session form - user can adjust as needed
+    document.getElementById('sessionForm').scrollIntoView({ behavior: 'smooth' });
+});
+
+// Analyze latest session after adding a new one
+document.getElementById('sessionForm').addEventListener('submit', function(e) {
+    // The original submit handler runs first, then this will execute
+    setTimeout(() => {
+        analyzeLatestSession();
+        // Update the next session UI after analysis
+        updateNextSessionUI();
+    }, 100);
+});
+
+// Plan next session button (in feedback modal)
+document.getElementById('planNextSessionBtn').addEventListener('click', function() {
+    // Hide the modal
+    const feedbackModal = bootstrap.Modal.getInstance(document.getElementById('sessionFeedbackModal'));
+    feedbackModal.hide();
+    
+    // Update UI and scroll to next session card
+    updateNextSessionUI();
+    document.getElementById('nextSessionCard').scrollIntoView({ behavior: 'smooth' });
+});
+
+// Update session planner UI when body stats are added or data is imported
+bodyStatsForm.addEventListener('submit', function() {
+    // The original submit handler runs first, then this will execute
+    setTimeout(() => {
+        document.getElementById('nextSessionCard').style.display = 'block';
+        initSessionPlannerUI();
+    }, 100);
+});
+
+importBtn.addEventListener('click', function() {
+    // The original click handler runs first, then this will execute
+    setTimeout(() => {
+        initSessionPlannerUI();
+    }, 500);
+});
+
+// Initialize session planner UI during page load
+initSessionPlannerUI();
 });

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rowing Progress Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Theme toggle switch -->
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <span class="theme-icon">🌙</span>
+    </div>
+    
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Rowing Progress Tracker</h1>
+            <p class="lead">Track your rowing workouts and monitor your progress over time.</p>
+        </div>
+
+        <!-- METRICS SECTIONS MOVED TO TOP -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="stats-container">
+                    <h3>Progress Overview</h3>
+                    <div id="progressStats">
+                        <p>Add at least two sessions to see your progress.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="stats-container">
+                    <h3>Total Stats</h3>
+                    <div id="totalStats">
+                        <p>No sessions recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stats-container">
+                    <h3>Weekly Summary</h3>
+                    <div id="weeklyStats">
+                        <p>No sessions recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Body Measurement Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="bodyStatsTrends">
+                                    <p>Add at least two measurements to see trends.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="bodyStatsChart" style="height: 300px;">
+                                    <!-- Chart will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Recent Body Measurements</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="bodyStatsList">
+                            <p>No measurements recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Recent Rowing Sessions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionsList">
+                            <p>No sessions recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMS MOVED BELOW METRICS -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Body Measurements</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="bodyStatsForm">
+                            <div class="mb-3">
+                                <label for="statsDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="statsDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="statsWeight" class="form-label">Weight (lbs)</label>
+                                <input type="number" step="0.1" class="form-control" id="statsWeight" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="statsBmi" class="form-label">BMI</label>
+                                <input type="number" step="0.1" class="form-control" id="statsBmi" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bodyFat" class="form-label">Body Fat %</label>
+                                <input type="number" step="0.1" class="form-control" id="bodyFat">
+                            </div>
+                            <div class="mb-3">
+                                <label for="muscleMass" class="form-label">Muscle Mass %</label>
+                                <input type="number" step="0.1" class="form-control" id="muscleMass">
+                            </div>
+                            <div class="mb-3">
+                                <label for="bodyWater" class="form-label">Body Water %</label>
+                                <input type="number" step="0.1" class="form-control" id="bodyWater">
+                            </div>
+                            <div class="mb-3">
+                                <label for="bodyStatsNotes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="bodyStatsNotes" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Add Measurement</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Add New Rowing Session</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="sessionForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="date" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="date" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="duration" class="form-label">Duration (min)</label>
+                                        <input type="number" class="form-control" id="duration" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="distance" class="form-label">Distance (miles)</label>
+                                        <input type="number" step="0.1" class="form-control" id="distance" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="avgSpeed" class="form-label">Avg Speed (mph)</label>
+                                        <input type="number" step="0.1" class="form-control" id="avgSpeed" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="heartRate" class="form-label">Heart Rate (BPM) (optional)</label>
+                                        <input type="number" class="form-control" id="heartRate">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="strokeRate" class="form-label">Stroke Rate (SPM) (optional)</label>
+                                        <input type="number" class="form-control" id="strokeRate">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="intensityDisplay" class="form-label">Intensity Level (auto)</label>
+                                        <input type="text" class="form-control" id="intensityDisplay" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="calories" class="form-label">Calories Burned (auto)</label>
+                                        <input type="number" class="form-control" id="calories" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="notes" class="form-label">Session Notes</label>
+                                        <textarea class="form-control" id="notes" rows="1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Add Session</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMPORT/EXPORT SECTION (COLLAPSIBLE) -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12">
+                <div class="card border-light" style="box-shadow: none;">
+                    <div class="card-header bg-transparent border-bottom-0">
+                        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center w-100 justify-content-between" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#importExportCollapse" 
+                                aria-expanded="false" 
+                                aria-controls="importExportCollapse">
+                            <span>Data Backup & Restore</span>
+                            <span class="small">⯆</span>
+                        </button>
+                    </div>
+                    <div class="collapse" id="importExportCollapse">
+                        <div class="card-body pt-0">
+                            <div class="small text-muted mb-2">Export your data to save a backup or import previously exported data</div>
+                            <div class="row g-2">
+                                <div class="col-auto">
+                                    <button id="exportBtn" class="btn btn-sm btn-outline-primary">Export</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button id="importBtn" class="btn btn-sm btn-outline-warning">Import</button>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="exportBoxContainer">
+                                <textarea id="exportBox" class="form-control form-control-sm" rows="3" placeholder="Your data will appear here when you click Export"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="toast.js"></script>
+    <script src="tracker.js"></script>
+    <script src="app.js"></script>
+    
+    <!-- Additional script for export/import UI improvements -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show textarea when export button is clicked
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                document.getElementById('exportBoxContainer').classList.add('show');
+            });
+            
+            // Show textarea when import button is clicked
+            document.getElementById('importBtn').addEventListener('click', function() {
+                document.getElementById('exportBoxContainer').classList.add('show');
+            });
+        });
+    </script>
+</body>
+</html>

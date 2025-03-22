@@ -1016,7 +1016,6 @@ const targetHeartRate = document.getElementById('targetHeartRate');
 const sessionFocus = document.getElementById('sessionFocus');
 const sessionFormat = document.getElementById('sessionFormat');
 const sessionTips = document.getElementById('sessionTips');
-const startSessionBtn = document.getElementById('startSessionBtn');
 const modifySessionBtn = document.getElementById('modifySessionBtn');
     
 // Initialize session planner UI
@@ -1197,29 +1196,8 @@ function analyzeLatestSession() {
     }
 }
     // Event listeners for session planner
-startSessionBtn.addEventListener('click', function() {
-    // Pre-fill the session form with recommended values
-    const nextSession = sessionPlanner.getNextSessionDetails();
-    
-    // Set date to today
-    document.getElementById('date').valueAsDate = new Date();
-    
-    // Set target duration (use the middle of the range)
-    const targetDuration = Math.floor((nextSession.durationMin + nextSession.durationMax) / 2);
-    durationInput.value = targetDuration;
-    
-    // Reset other fields to ensure calculator works properly
-    distanceInput.value = '';
-    speedInput.value = '';
-    
-    // Focus on the distance field so user can start entering their data
-    distanceInput.focus();
-    
-    // Scroll to session form
-    document.getElementById('sessionForm').scrollIntoView({ behavior: 'smooth' });
-});
 
-modifySessionBtn.addEventListener('click', function() {
+    modifySessionBtn.addEventListener('click', function() {
     // Simply scroll to session form - user can adjust as needed
     document.getElementById('sessionForm').scrollIntoView({ behavior: 'smooth' });
 });

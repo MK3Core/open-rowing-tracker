@@ -87,39 +87,54 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize rowing calculator
     function initRowingCalculator() {
-        // Set up event listeners for all three inputs
-        durationInput.addEventListener('input', handleInputChange);
-        distanceInput.addEventListener('input', handleInputChange);
-        speedInput.addEventListener('input', handleInputChange);
-        
-        // Add data attributes to track which field was last modified
-        durationInput.setAttribute('data-last-modified', 'false');
-        distanceInput.setAttribute('data-last-modified', 'false');
-        speedInput.setAttribute('data-last-modified', 'false');
-        
-        // Add auto-calculate indicators
-        addAutoCalculateIndicators();
-    }
+    // Set up event listeners for all three inputs
+    durationInput.addEventListener('input', handleInputChange);
+    distanceInput.addEventListener('input', handleInputChange);
+    speedInput.addEventListener('input', handleInputChange);
+    
+    // Add data attributes to track which field was last modified
+    durationInput.setAttribute('data-last-modified', 'false');
+    distanceInput.setAttribute('data-last-modified', 'false');
+    speedInput.setAttribute('data-last-modified', 'false');
+    
+    // Add data attributes to track the previously modified field
+    durationInput.setAttribute('data-prev-modified', 'false');
+    distanceInput.setAttribute('data-prev-modified', 'false');
+    speedInput.setAttribute('data-prev-modified', 'false');
+    
+    // Add auto-calculate indicators
+    addAutoCalculateIndicators();
+}
     
     // Handler for input changes
     function handleInputChange(event) {
-        // Reset last-modified flags
-        resetLastModified();
-        
-        // Set the current input as the last modified
-        event.target.setAttribute('data-last-modified', 'true');
-        
-        // Calculate missing values
-        calculateMissingValues();
-        
-        // Update indicators
-        updateCalculationIndicators();
-        
-        // Calculate calories if we have speed and duration
-        if (speedInput.value && durationInput.value) {
-            calculateCalories();
-        }
+    // Track the previous modified field before resetting
+    document.querySelectorAll('[data-last-modified="true"]').forEach(el => {
+        // Clear any previous prev-modified flags
+        document.querySelectorAll('[data-prev-modified="true"]').forEach(prevEl => {
+            prevEl.setAttribute('data-prev-modified', 'false');
+        });
+        // Set the current last-modified as prev-modified
+        el.setAttribute('data-prev-modified', 'true');
+    });
+    
+    // Reset last-modified flags
+    resetLastModified();
+    
+    // Set the current input as the last modified
+    event.target.setAttribute('data-last-modified', 'true');
+    
+    // Calculate missing values
+    calculateMissingValues();
+    
+    // Update indicators
+    updateCalculationIndicators();
+    
+    // Calculate calories if we have speed and duration
+    if (speedInput.value && durationInput.value) {
+        calculateCalories();
     }
+}
     
     // Function to reset all last-modified flags
     function resetLastModified() {
@@ -246,38 +261,79 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) input.classList.remove('auto-calculate-target');
     });
     
-    // Get current values
-    const duration = parseFloat(durationInput.value);
-    const distance = parseFloat(distanceInput.value);
-    const speed = parseFloat(speedInput.value);
+    // Count filled fields and identify which ones are filled
+    let filledFields = 0;
+    const isDurationFilled = !isNaN(parseFloat(durationInput.value));
+    const isDistanceFilled = !isNaN(parseFloat(distanceInput.value));
+    const isSpeedFilled = !isNaN(parseFloat(speedInput.value));
     
-    // Get last modified status
-    const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
-    const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
-    const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
+    if (isDurationFilled) filledFields++;
+    if (isDistanceFilled) filledFields++;
+    if (isSpeedFilled) filledFields++;
     
-    // Show indicators based on which fields will be calculated
+    // Get last modified field
+    const lastModifiedField = durationInput.getAttribute('data-last-modified') === 'true' ? 'duration' :
+                             distanceInput.getAttribute('data-last-modified') === 'true' ? 'distance' :
+                             speedInput.getAttribute('data-last-modified') === 'true' ? 'speed' : null;
     
-    // If speed and distance have values and one of them was last modified
-    // then duration will be calculated
-    if (!isNaN(speed) && !isNaN(distance) && speed > 0 && (speedLastModified || distanceLastModified)) {
-        durationIndicator.style.display = 'block';
-        durationLabel.classList.add('auto-calculate-active');
-        durationInput.classList.add('auto-calculate-target');
+    // If exactly 2 fields are filled, highlight the third one as the one to be calculated
+    if (filledFields === 2) {
+        if (!isDurationFilled) {
+            durationIndicator.style.display = 'block';
+            durationLabel.classList.add('auto-calculate-active');
+            durationInput.classList.add('auto-calculate-target');
+        } else if (!isDistanceFilled) {
+            distanceIndicator.style.display = 'block';
+            distanceLabel.classList.add('auto-calculate-active');
+            distanceInput.classList.add('auto-calculate-target');
+        } else if (!isSpeedFilled) {
+            speedIndicator.style.display = 'block';
+            speedLabel.classList.add('auto-calculate-active');
+            speedInput.classList.add('auto-calculate-target');
+        }
     }
-    // If duration and speed have values and one of them was last modified
-    // then distance will be calculated
-    else if (!isNaN(duration) && !isNaN(speed) && (durationLastModified || speedLastModified)) {
-        distanceIndicator.style.display = 'block';
-        distanceLabel.classList.add('auto-calculate-active');
-        distanceInput.classList.add('auto-calculate-target');
-    }
-    // If duration and distance have values and one of them was last modified
-    // then speed will be calculated
-    else if (!isNaN(duration) && !isNaN(distance) && duration > 0 && (durationLastModified || distanceLastModified)) {
-        speedIndicator.style.display = 'block';
-        speedLabel.classList.add('auto-calculate-active');
-        speedInput.classList.add('auto-calculate-target');
+    // If all 3 fields are filled, highlight the one that was calculated (not the last modified)
+    else if (filledFields === 3 && lastModifiedField) {
+        // The calculated field is the one that wasn't one of the last two modified
+        const previousFields = document.querySelectorAll('[data-prev-modified="true"]');
+        const prevModifiedField = previousFields.length > 0 ? 
+                                  previousFields[0].id === 'duration' ? 'duration' :
+                                  previousFields[0].id === 'distance' ? 'distance' : 'speed' : null;
+        
+        // If we have the previous modified field, we can determine which was calculated
+        if (prevModifiedField && prevModifiedField !== lastModifiedField) {
+            // The calculated field is neither the last modified nor the previous modified
+            if (lastModifiedField !== 'duration' && prevModifiedField !== 'duration') {
+                durationIndicator.style.display = 'block';
+                durationLabel.classList.add('auto-calculate-active');
+                durationInput.classList.add('auto-calculate-target');
+            } else if (lastModifiedField !== 'distance' && prevModifiedField !== 'distance') {
+                distanceIndicator.style.display = 'block';
+                distanceLabel.classList.add('auto-calculate-active');
+                distanceInput.classList.add('auto-calculate-target');
+            } else if (lastModifiedField !== 'speed' && prevModifiedField !== 'speed') {
+                speedIndicator.style.display = 'block';
+                speedLabel.classList.add('auto-calculate-active');
+                speedInput.classList.add('auto-calculate-target');
+            }
+        } 
+        // Fallback: If we can't determine exactly which was calculated, just highlight the non-last modified field
+        else {
+            // If two fields are manually entered, the third is calculated
+            if (lastModifiedField !== 'duration') {
+                durationIndicator.style.display = 'block';
+                durationLabel.classList.add('auto-calculate-active');
+                durationInput.classList.add('auto-calculate-target');
+            } else if (lastModifiedField !== 'distance') {
+                distanceIndicator.style.display = 'block';
+                distanceLabel.classList.add('auto-calculate-active');
+                distanceInput.classList.add('auto-calculate-target');
+            } else {
+                speedIndicator.style.display = 'block';
+                speedLabel.classList.add('auto-calculate-active');
+                speedInput.classList.add('auto-calculate-target');
+            }
+        }
     }
 }
     

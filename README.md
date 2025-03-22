@@ -49,7 +49,7 @@ MET values vary by rowing speed:
 
 The application includes a structured 4-week beginner rowing plan that gradually increases workout duration and intensity. The plan focuses on developing proper form and building cardiovascular endurance safely.
 
-For the complete workout plan with detailed information about each week's format, SPM ranges, heart rate targets, and safety tips, see [your beginner rowing plan](beginner-plan.md).
+For the complete workout plan with detailed information about each week's format, SPM ranges, heart rate targets, and safety tips, see [your beginner rowing plan](docs/beginner-plan.md).
 
 ## Setup Instructions
 

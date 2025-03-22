@@ -1001,6 +1001,201 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial UI refresh
     refreshUI();
+    // ====== SESSION PLANNER INTEGRATION ======
+    
+// Initialize session planner
+let sessionPlanner = new SessionPlanner(tracker);
+    
+// DOM Elements for session planner
+const weekBadge = document.getElementById('weekBadge');
+const sessionBadge = document.getElementById('sessionBadge');
+const planProgressBar = document.getElementById('planProgressBar');
+const nextSessionDate = document.getElementById('nextSessionDate');
+const targetDuration = document.getElementById('targetDuration');
+const targetHeartRate = document.getElementById('targetHeartRate');
+const sessionFocus = document.getElementById('sessionFocus');
+const sessionFormat = document.getElementById('sessionFormat');
+const sessionTips = document.getElementById('sessionTips');
+const startSessionBtn = document.getElementById('startSessionBtn');
+const modifySessionBtn = document.getElementById('modifySessionBtn');
+    
+// Initialize session planner UI
+function initSessionPlannerUI() {
+    // Hide if no body measurements yet
+    if (!tracker.getLatestBodyStats()) {
+        document.getElementById('nextSessionCard').style.display = 'none';
+        return;
+    }
+    
+    updateNextSessionUI();
+}
+    
+// Update next session UI
+function updateNextSessionUI() {
+    try {
+        const nextSession = sessionPlanner.getNextSessionDetails();
+        
+        // Update badges
+        weekBadge.textContent = `Week ${nextSession.week}`;
+        sessionBadge.textContent = `Session ${nextSession.sessionNumber}/${nextSession.totalSessionsInWeek}`;
+        
+        // Update progress bar
+        planProgressBar.style.width = `${nextSession.planProgress}%`;
+        planProgressBar.textContent = `${nextSession.planProgress}%`;
+        planProgressBar.setAttribute('aria-valuenow', nextSession.planProgress);
+        
+        // Update session details
+        nextSessionDate.textContent = sessionPlanner.suggestNextSessionDate();
+        targetDuration.textContent = `${nextSession.durationMin}-${nextSession.durationMax}`;
+        targetHeartRate.textContent = `${nextSession.heartRateMin}-${nextSession.heartRateMax}`;
+        sessionFocus.textContent = nextSession.focus;
+        sessionFormat.textContent = nextSession.format;
+        
+        // Update tips based on current week
+        const weekSpecificTips = getWeekSpecificTips(nextSession.week);
+        sessionTips.innerHTML = '';
+        weekSpecificTips.forEach(tip => {
+            const li = document.createElement('li');
+            li.textContent = tip;
+            sessionTips.appendChild(li);
+        });
+    } catch (err) {
+        console.error('Error updating session UI:', err);
+    }
+}
+    
+// Get week-specific tips
+function getWeekSpecificTips(weekNum) {
+    const commonTips = [
+        'Complete all stretches before starting',
+        'Stay hydrated throughout your session'
+    ];
+    
+    const weekTips = {
+        '1': [
+            'Focus on your form over speed or intensity',
+            'Maintain a steady breathing pattern'
+        ],
+        '2': [
+            'Concentrate on consistent stroke rate',
+            'Keep your heart rate in the target zone'
+        ],
+        '3': [
+            'Focus on breathing control during longer intervals',
+            'Maintain good posture throughout'
+        ],
+        '4': [
+            'Maintain steady pace for the longer duration',
+            'Pay attention to your recovery phase'
+        ]
+    };
+    
+    return [...commonTips, ...weekTips[weekNum]];
+}
+    
+// Update session targets guidance based on current week
+function updateSessionTargetsGuidance() {
+    if (!document.getElementById('sessionTargetsGuidance')) {
+        return;
+    }
+    
+    try {
+        const nextSession = sessionPlanner.getNextSessionDetails();
+        
+        // Update guidance panel content
+        document.getElementById('targetWeek').textContent = nextSession.week;
+        document.getElementById('targetWarmupSPM').textContent = nextSession.spm.warmup;
+        document.getElementById('targetWorkSPM').textContent = nextSession.spm.work;
+        
+        // Recovery SPM might be different in week 4 (steady state)
+        if (nextSession.week === '4') {
+            document.getElementById('targetRecoverySPM').textContent = nextSession.spm.cooldown;
+        } else {
+            document.getElementById('targetRecoverySPM').textContent = nextSession.spm.recovery;
+        }
+        
+        document.getElementById('targetHRRange').textContent = `${nextSession.heartRateMin}-${nextSession.heartRateMax} BPM`;
+        document.getElementById('targetFocus').textContent = nextSession.focus;
+        
+        // Show the guidance panel
+        document.getElementById('sessionTargetsGuidance').style.display = 'block';
+    } catch (err) {
+        console.error('Error updating session targets guidance:', err);
+    }
+}
+    
+// Analyze the most recent session and show feedback
+function analyzeLatestSession() {
+    if (!document.getElementById('sessionFeedbackModal')) {
+        console.log('Session feedback modal not found');
+        return;
+    }
+    
+    const latestSession = tracker.getLatestSession();
+    if (!latestSession) return;
+    
+    try {
+        const analysis = sessionPlanner.analyzeSessionPerformance(latestSession);
+        
+        // Update modal content
+        document.getElementById('overallFeedbackTitle').textContent = 
+            analysis.overall.status === 'on_target' ? 'Great Job!' :
+            analysis.overall.status === 'below_target' ? 'Room for Improvement' :
+            analysis.overall.status === 'above_target' ? 'Impressive Effort!' : 'Mixed Results';
+        
+        document.getElementById('overallFeedbackMessage').textContent = analysis.overall.message;
+        
+        // Update duration feedback
+        const durationCard = document.querySelector('.metric-card:nth-child(1)');
+        durationCard.className = 'card metric-card ' + analysis.duration.status;
+        document.getElementById('durationStatus').textContent = 
+            analysis.duration.status === 'on_target' ? '✓' :
+            analysis.duration.status === 'below_target' ? '↓' : '↑';
+        document.getElementById('targetDurationValue').textContent = analysis.duration.target;
+        document.getElementById('actualDurationValue').textContent = analysis.duration.actual + ' min';
+        document.getElementById('durationFeedback').textContent = analysis.duration.message;
+        
+        // Update heart rate feedback
+        const heartRateCard = document.querySelector('.metric-card:nth-child(2)');
+        heartRateCard.className = 'card metric-card ' + (analysis.heartRate.status === 'no_data' ? 'on_target' : analysis.heartRate.status);
+        document.getElementById('heartRateStatus').textContent = 
+            analysis.heartRate.status === 'no_data' ? '?' :
+            analysis.heartRate.status === 'on_target' ? '✓' :
+            analysis.heartRate.status === 'below_target' ? '↓' : '↑';
+        document.getElementById('targetHeartRateValue').textContent = analysis.heartRate.target;
+        document.getElementById('actualHeartRateValue').textContent = analysis.heartRate.actual ? analysis.heartRate.actual + ' BPM' : 'No data';
+        document.getElementById('heartRateFeedback').textContent = analysis.heartRate.message || 'Consider using a heart rate monitor for better tracking.';
+        
+        // Update stroke rate feedback
+        const strokeRateCard = document.querySelector('.metric-card:nth-child(3)');
+        strokeRateCard.className = 'card metric-card ' + (analysis.strokeRate.status === 'no_data' ? 'on_target' : analysis.strokeRate.status);
+        document.getElementById('strokeRateStatus').textContent = 
+            analysis.strokeRate.status === 'no_data' ? '?' :
+            analysis.strokeRate.status === 'on_target' ? '✓' :
+            analysis.strokeRate.status === 'below_target' ? '↓' : '↑';
+        document.getElementById('targetStrokeRateValue').textContent = analysis.strokeRate.target;
+        document.getElementById('actualStrokeRateValue').textContent = analysis.strokeRate.actual ? analysis.strokeRate.actual + ' SPM' : 'No data';
+        document.getElementById('strokeRateFeedback').textContent = analysis.strokeRate.message || 'Try tracking your stroke rate next time for more insights.';
+        
+        // Update next steps suggestion
+        const nextSession = sessionPlanner.getNextSessionDetails();
+        const nextDate = new Date(sessionPlanner.suggestNextSessionDate());
+        const nextDateFormatted = nextDate.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        document.getElementById('nextStepsSuggestion').textContent = 
+            `Continue with your Week ${nextSession.week} plan. Your next session is recommended for ${nextDateFormatted}.`;
+        
+        // Show the modal using Bootstrap
+        try {
+            const bsModal = new bootstrap.Modal(document.getElementById('sessionFeedbackModal'));
+            bsModal.show();
+        } catch (modalError) {
+            console.error('Error showing modal:', modalError);
+        }
+    } catch (err) {
+        console.error('Error analyzing latest session:', err);
+    }
+}
     // Event listeners for session planner
 startSessionBtn.addEventListener('click', function() {
     // Pre-fill the session form with recommended values

@@ -4,6 +4,12 @@ A simple web application to track your rowing workouts and body measurements ove
 
 ## Features
 
+- **Beginner Rowing Plan Integration**:
+  - Structured workout recommendations following a 4-week progression
+  - Visual session planning with SPM and heart rate targets
+  - Session analysis comparing your performance to targets
+  - Automatic progression through the training plan
+  - Week-specific training tips and guidance
 - Track rowing sessions with detailed metrics:
   - Duration, distance, speed
   - Heart rate (min/max)
@@ -39,6 +45,12 @@ MET values vary by rowing speed:
 - 4.0-5.9 mph: Moderate effort (5.8 MET)
 - 6.0+ mph: Vigorous effort (12.0 MET)
 
+## Beginner Rowing Plan
+
+The application includes a structured 4-week beginner rowing plan that gradually increases workout duration and intensity. The plan focuses on developing proper form and building cardiovascular endurance safely.
+
+For the complete workout plan with detailed information about each week's format, SPM ranges, heart rate targets, and safety tips, see [your beginner rowing plan](beginner-plan.md).
+
 ## Setup Instructions
 
 1. **Download the Files**
@@ -49,6 +61,8 @@ MET values vary by rowing speed:
      - `tracker.js`
      - `app.js`
      - `toast.js`
+     - `session-planner.js`
+     - `BEGINNER-ROWING-PLAN.md` (documentation only)
 
 2. **Open the Application**
    - Simply open the `index.html` file in your web browser
@@ -56,7 +70,8 @@ MET values vary by rowing speed:
 
 3. **Getting Started**
    - The first step is to add your body measurements (weight, BMI, etc.)
-   - Once body measurements are added, you can record rowing sessions
+   - Once body measurements are added, you can see your recommended workouts
+   - Follow the structured plan or create custom sessions
 
 ## Using the Tracker
 
@@ -65,6 +80,14 @@ MET values vary by rowing speed:
 1. Use the "Body Measurements" form to record your body stats
 2. Fill in the required fields (weight, BMI) and any optional fields
 3. Click "Add Measurement" to save
+
+### Using the Beginner Plan
+
+1. View your next recommended session in the "Your Next Session" card
+2. Click "Start Session" to automatically set up the recommended workout
+3. After completing your workout, record the actual metrics
+4. Review the session analysis to see how you performed against targets
+5. The app will guide you through the 4-week progression automatically
 
 ### Recording Rowing Sessions
 

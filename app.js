@@ -221,62 +221,65 @@ document.addEventListener('DOMContentLoaded', function() {
         speedInput.addEventListener('focus', updateCalculationIndicators);
     }
     
-    // Update visual indicators
+    // Function to update visual indicators - FIXED VERSION
     function updateCalculationIndicators() {
-        // Get indicator elements
-        const durationIndicator = document.getElementById('durationIndicator');
-        const distanceIndicator = document.getElementById('distanceIndicator');
-        const speedIndicator = document.getElementById('speedIndicator');
-        
-        // Get labels
-        const durationLabel = document.querySelector('label[for="duration"]');
-        const distanceLabel = document.querySelector('label[for="distance"]');
-        const speedLabel = document.querySelector('label[for="avgSpeed"]');
-        
-        // Reset all indicators and styling
-        [durationIndicator, distanceIndicator, speedIndicator].forEach(ind => {
-            if (ind) ind.style.display = 'none';
-        });
-        
-        [durationLabel, distanceLabel, speedLabel].forEach(label => {
-            if (label) label.classList.remove('auto-calculate-active');
-        });
-        
-        [durationInput, distanceInput, speedInput].forEach(input => {
-            if (input) input.classList.remove('auto-calculate-target');
-        });
-        
-        // Get current values
-        const duration = parseFloat(durationInput.value);
-        const distance = parseFloat(distanceInput.value);
-        const speed = parseFloat(speedInput.value);
-        
-        // Get last modified status
-        const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
-        const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
-        const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
-        
-        // Show indicators based on which fields are filled and last modified
-        
-        // If distance and speed are filled/modified, show duration will be calculated
-        if (!isNaN(distance) && !isNaN(speed) && speed > 0 && (distanceLastModified || speedLastModified)) {
-            durationIndicator.style.display = 'block';
-            durationLabel.classList.add('auto-calculate-active');
-            durationInput.classList.add('auto-calculate-target');
-        }
-        // If duration and speed are filled/modified, show distance will be calculated
-        else if (!isNaN(duration) && !isNaN(speed) && (durationLastModified || speedLastModified)) {
-            distanceIndicator.style.display = 'block';
-            distanceLabel.classList.add('auto-calculate-active');
-            distanceInput.classList.add('auto-calculate-target');
-        }
-        // If duration and distance are filled/modified, show speed will be calculated
-        else if (!isNaN(duration) && !isNaN(distance) && duration > 0 && (durationLastModified || distanceLastModified)) {
-            speedIndicator.style.display = 'block';
-            speedLabel.classList.add('auto-calculate-active');
-            speedInput.classList.add('auto-calculate-target');
-        }
+    // Get indicator elements
+    const durationIndicator = document.getElementById('durationIndicator');
+    const distanceIndicator = document.getElementById('distanceIndicator');
+    const speedIndicator = document.getElementById('speedIndicator');
+    
+    // Get labels
+    const durationLabel = document.querySelector('label[for="duration"]');
+    const distanceLabel = document.querySelector('label[for="distance"]');
+    const speedLabel = document.querySelector('label[for="avgSpeed"]');
+    
+    // Reset all indicators and styling
+    [durationIndicator, distanceIndicator, speedIndicator].forEach(ind => {
+        if (ind) ind.style.display = 'none';
+    });
+    
+    [durationLabel, distanceLabel, speedLabel].forEach(label => {
+        if (label) label.classList.remove('auto-calculate-active');
+    });
+    
+    [durationInput, distanceInput, speedInput].forEach(input => {
+        if (input) input.classList.remove('auto-calculate-target');
+    });
+    
+    // Get current values
+    const duration = parseFloat(durationInput.value);
+    const distance = parseFloat(distanceInput.value);
+    const speed = parseFloat(speedInput.value);
+    
+    // Get last modified status
+    const durationLastModified = durationInput.getAttribute('data-last-modified') === 'true';
+    const distanceLastModified = distanceInput.getAttribute('data-last-modified') === 'true';
+    const speedLastModified = speedInput.getAttribute('data-last-modified') === 'true';
+    
+    // Show indicators based on which fields will be calculated
+    
+    // If speed and distance have values and one of them was last modified
+    // then duration will be calculated
+    if (!isNaN(speed) && !isNaN(distance) && speed > 0 && (speedLastModified || distanceLastModified)) {
+        durationIndicator.style.display = 'block';
+        durationLabel.classList.add('auto-calculate-active');
+        durationInput.classList.add('auto-calculate-target');
     }
+    // If duration and speed have values and one of them was last modified
+    // then distance will be calculated
+    else if (!isNaN(duration) && !isNaN(speed) && (durationLastModified || speedLastModified)) {
+        distanceIndicator.style.display = 'block';
+        distanceLabel.classList.add('auto-calculate-active');
+        distanceInput.classList.add('auto-calculate-target');
+    }
+    // If duration and distance have values and one of them was last modified
+    // then speed will be calculated
+    else if (!isNaN(duration) && !isNaN(distance) && duration > 0 && (durationLastModified || distanceLastModified)) {
+        speedIndicator.style.display = 'block';
+        speedLabel.classList.add('auto-calculate-active');
+        speedInput.classList.add('auto-calculate-target');
+    }
+}
     
     // ====== CALORIE CALCULATOR ======
     

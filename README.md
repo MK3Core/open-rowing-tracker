@@ -10,6 +10,7 @@ A simple web application to track your rowing workouts and body measurements ove
   - Session analysis comparing your performance to targets
   - Automatic progression through the training plan
   - Week-specific training tips and guidance
+  - Performance feedback with personalized recommendations
 - Track rowing sessions with detailed metrics:
   - Duration, distance, speed
   - Heart rate (min/max)
@@ -29,6 +30,7 @@ A simple web application to track your rowing workouts and body measurements ove
   - Body composition trends
 - Data visualization with interactive charts
 - Dark/light mode toggle for comfortable viewing
+- Automatic workout calculations (enter any two of: duration, distance, speed)
 - Import/export all data in JSON format
 - Works offline with local storage
 
@@ -50,6 +52,14 @@ MET values vary by rowing speed:
 The application includes a structured 4-week beginner rowing plan that gradually increases workout duration and intensity. The plan focuses on developing proper form and building cardiovascular endurance safely.
 
 For the complete workout plan with detailed information about each week's format, SPM ranges, heart rate targets, and safety tips, see [your beginner rowing plan](docs/beginner-plan.md).
+
+## Session Feedback System
+
+After each completed session, the application provides personalized feedback by:
+- Analyzing your performance against target metrics
+- Highlighting areas where you met or exceeded goals
+- Providing suggestions for improvement
+- Recommending your next workout based on your progress
 
 ## Setup Instructions
 
@@ -84,7 +94,7 @@ For the complete workout plan with detailed information about each week's format
 ### Using the Beginner Plan
 
 1. View your next recommended session in the "Your Next Session" card
-2. Click "Start Session" to automatically set up the recommended workout
+2. Click "View Session Form" to automatically set up the recommended workout
 3. After completing your workout, record the actual metrics
 4. Review the session analysis to see how you performed against targets
 5. The app will guide you through the 4-week progression automatically
@@ -95,6 +105,14 @@ For the complete workout plan with detailed information about each week's format
 2. Enter the date, duration, distance, and other metrics
 3. The intensity level and calories burned will be automatically calculated based on your speed
 4. Click "Add Session" to save
+5. Review the feedback on your performance
+
+### Smart Workout Calculator
+
+1. Enter any two of the three main metrics (duration, distance, speed)
+2. The third metric will be automatically calculated
+3. Visual indicators show which field is being auto-calculated
+4. Calories are automatically calculated based on your speed and latest weight
 
 ### Viewing Your Progress
 

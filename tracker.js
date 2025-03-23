@@ -156,39 +156,43 @@ class RowingTracker {
   }
   
   // Get progress metrics
-  getProgressMetrics() {
-    if (this.sessions.length < 2) return "Need at least 2 sessions to track progress.";
-    
-    const firstSession = this.sessions[0];
-    const lastSession = this.sessions[this.sessions.length - 1];
-    
-    // Calculate heart rate change only if both sessions have heart rate data
-    let heartRateChange = null;
-    if (firstSession.heartRate !== null && lastSession.heartRate !== null) {
-      heartRateChange = {
-        value: (lastSession.heartRate - firstSession.heartRate).toFixed(0)
-      };
-    }
-    
-    return {
-      durationChange: {
-        value: lastSession.duration - firstSession.duration,
-        percent: ((lastSession.duration - firstSession.duration) / firstSession.duration * 100).toFixed(1)
-      },
-      speedChange: {
-        value: (lastSession.avgSpeed - firstSession.avgSpeed).toFixed(2),
-        percent: ((lastSession.avgSpeed - firstSession.avgSpeed) / firstSession.avgSpeed * 100).toFixed(1)
-      },
-      distanceChange: {
-        value: (lastSession.distance - firstSession.distance).toFixed(2),
-        percent: ((lastSession.distance - firstSession.distance) / firstSession.distance * 100).toFixed(1)
-      },
-      heartRateChange: heartRateChange,
-      totalSessions: this.sessions.length,
-      daysBetween: this.daysBetween(new Date(firstSession.date), new Date(lastSession.date)),
-      totalDistance: this.sessions.reduce((sum, session) => sum + session.distance, 0).toFixed(2)
+getProgressMetrics() {
+  if (this.sessions.length < 2) return "Need at least 2 sessions to track progress.";
+  
+  // Sort sessions by date to ensure consistent comparison order
+  const sortedSessions = [...this.sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // Always use first (earliest) and last (most recent) session after sorting
+  const firstSession = sortedSessions[0];
+  const lastSession = sortedSessions[sortedSessions.length - 1];
+  
+  // Calculate heart rate change only if both sessions have heart rate data
+  let heartRateChange = null;
+  if (firstSession.heartRate !== null && lastSession.heartRate !== null) {
+    heartRateChange = {
+      value: (lastSession.heartRate - firstSession.heartRate).toFixed(0)
     };
   }
+  
+  return {
+    durationChange: {
+      value: lastSession.duration - firstSession.duration,
+      percent: ((lastSession.duration - firstSession.duration) / firstSession.duration * 100).toFixed(1)
+    },
+    speedChange: {
+      value: (lastSession.avgSpeed - firstSession.avgSpeed).toFixed(2),
+      percent: ((lastSession.avgSpeed - firstSession.avgSpeed) / firstSession.avgSpeed * 100).toFixed(1)
+    },
+    distanceChange: {
+      value: (lastSession.distance - firstSession.distance).toFixed(2),
+      percent: ((lastSession.distance - firstSession.distance) / firstSession.distance * 100).toFixed(1)
+    },
+    heartRateChange: heartRateChange,
+    totalSessions: this.sessions.length,
+    daysBetween: this.daysBetween(new Date(firstSession.date), new Date(lastSession.date)),
+    totalDistance: sortedSessions.reduce((sum, session) => sum + session.distance, 0).toFixed(2)
+  };
+}
   
   // Helper: Calculate days between two dates
   daysBetween(date1, date2) {
@@ -198,14 +202,17 @@ class RowingTracker {
   
   // Get most recent session
   getLatestSession() {
-    if (this.sessions.length === 0) return null;
-    return this.sessions[this.sessions.length - 1];
-  }
-  
-  // Get all sessions
-  getAllSessions() {
-    return this.sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
-  }
+  if (this.sessions.length === 0) return null;
+  // Sort sessions by date (newest first) and return the first one
+  const sortedSessions = [...this.sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+  return sortedSessions[0];
+}
+
+// Get all sessions
+getAllSessions() {
+  // Create a copy and sort by date (newest first)
+  return [...this.sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+}
   
   // Get body stats data
   getBodyStats() {

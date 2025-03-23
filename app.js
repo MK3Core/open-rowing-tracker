@@ -661,119 +661,125 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Refresh all UI elements
     function refreshUI() {
-        // Display current profile info
-        const latestStats = tracker.getLatestBodyStats();
+    // Display current profile info
+    const latestStats = tracker.getLatestBodyStats();
+    
+    // Update progress stats
+    const progressStatsEl = document.getElementById('progressStats');
+    const progressStats = tracker.getProgressMetrics();
+    
+    if (typeof progressStats === 'string') {
+        progressStatsEl.innerHTML = `<p>${progressStats}</p>`;
+    } else {
+        // Define what constitutes improvement for each metric
+        const isSpeedImproved = progressStats.speedChange.value > 0;
+        const isDurationImproved = progressStats.durationChange.value > 0;
         
-        // Update progress stats
-        const progressStatsEl = document.getElementById('progressStats');
-        const progressStats = tracker.getProgressMetrics();
-        
-        if (typeof progressStats === 'string') {
-            progressStatsEl.innerHTML = `<p>${progressStats}</p>`;
-        } else {
-            let progressHtml = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Total Sessions:</strong> ${progressStats.totalSessions}</p>
-                        <p><strong>Days Active:</strong> ${progressStats.daysBetween}</p>
-                        <p><strong>Total Distance:</strong> ${progressStats.totalDistance} miles</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Speed Change:</strong> 
-                            <span class="${progressStats.speedChange.value > 0 ? 'text-success' : 'text-danger'}">
-                                ${progressStats.speedChange.value > 0 ? '+' : ''}${progressStats.speedChange.value} mph (${progressStats.speedChange.percent}%)
-                            </span>
-                        </p>
-                        <p><strong>Duration Change:</strong> 
-                            <span class="${progressStats.durationChange.value > 0 ? 'text-success' : 'text-danger'}">
-                                ${progressStats.durationChange.value > 0 ? '+' : ''}${progressStats.durationChange.value} min (${progressStats.durationChange.percent}%)
-                            </span>
-                        </p>`;
-                        
-            // Only show heart rate change if we have the data
-            if (progressStats.heartRateChange) {
-                progressHtml += `
-                        <p><strong>Heart Rate Change:</strong> 
-                            <span class="${progressStats.heartRateChange.value < 0 ? 'text-success' : 'text-danger'}">
-                                ${progressStats.heartRateChange.value > 0 ? '+' : ''}${progressStats.heartRateChange.value} BPM
-                            </span>
-                        </p>`;
-            }
-            
-            progressHtml += `
-                    </div>
+        let progressHtml = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Total Sessions:</strong> ${progressStats.totalSessions}</p>
+                    <p><strong>Days Active:</strong> ${progressStats.daysBetween}</p>
+                    <p><strong>Total Distance:</strong> ${progressStats.totalDistance} miles</p>
                 </div>
-            `;
-            
-            progressStatsEl.innerHTML = progressHtml;
+                <div class="col-md-6">
+                    <p><strong>Speed Change:</strong> 
+                        <span class="${isSpeedImproved ? 'text-success' : 'text-danger'}">
+                            ${progressStats.speedChange.value > 0 ? '+' : ''}${progressStats.speedChange.value} mph (${progressStats.speedChange.percent}%)
+                        </span>
+                    </p>
+                    <p><strong>Duration Change:</strong> 
+                        <span class="${isDurationImproved ? 'text-success' : 'text-danger'}">
+                            ${progressStats.durationChange.value > 0 ? '+' : ''}${progressStats.durationChange.value} min (${progressStats.durationChange.percent}%)
+                        </span>
+                    </p>`;
+                    
+        // Only show heart rate change if we have the data
+        if (progressStats.heartRateChange) {
+            // For heart rate, a DECREASE is good (opposite of other metrics)
+            const isHeartRateImproved = progressStats.heartRateChange.value < 0;
+            progressHtml += `
+                    <p><strong>Heart Rate Change:</strong> 
+                        <span class="${isHeartRateImproved ? 'text-success' : 'text-danger'}">
+                            ${progressStats.heartRateChange.value > 0 ? '+' : ''}${progressStats.heartRateChange.value} BPM
+                        </span>
+                    </p>`;
         }
         
-        // Update total stats
-        const totalStatsEl = document.getElementById('totalStats');
-        const totalStats = tracker.getTotalStats();
+        progressHtml += `
+                </div>
+            </div>
+        `;
         
-        if (typeof totalStats === 'string') {
-            totalStatsEl.innerHTML = `<p>${totalStats}</p>`;
-        } else {
-            let statsHTML = `
-                <p><strong>Total Sessions:</strong> ${totalStats.totalSessions}</p>
-                <p><strong>Total Duration:</strong> ${totalStats.totalDuration.toFixed(0)} minutes</p>
-                <p><strong>Total Distance:</strong> ${totalStats.totalDistance.toFixed(2)} miles</p>
-                <p><strong>Total Calories:</strong> ${totalStats.totalCalories.toFixed(0)}</p>
-                <p><strong>Average Speed:</strong> ${totalStats.avgSpeed.toFixed(2)} mph</p>`;
-                
-            // Only show average heart rate if we have data
-            if (totalStats.avgHeartRate > 0) {
-                statsHTML += `<p><strong>Average Heart Rate:</strong> ${totalStats.avgHeartRate.toFixed(0)} BPM</p>`;
-            }
-            
-            // Add current stats if available
-            if (latestStats) {
-                statsHTML += `
-                    <hr>
-                    <p><strong>Current Weight:</strong> ${latestStats.weight} lbs</p>
-                    <p><strong>Current BMI:</strong> ${latestStats.bmi}</p>
-                `;
-            }
-            
-            totalStatsEl.innerHTML = statsHTML;
-        }
-        
-        // Update weekly stats
-        const weeklyStatsEl = document.getElementById('weeklyStats');
-        const weeklyStats = tracker.getWeeklyStats();
-        
-        if (typeof weeklyStats === 'string') {
-            weeklyStatsEl.innerHTML = `<p>${weeklyStats}</p>`;
-        } else {
-            let weeklyHtml = '<div style="max-height: 300px; overflow-y: auto;">';
-            weeklyHtml += '<table class="table table-sm"><thead><tr><th>Week</th><th>Sessions</th><th>Duration</th><th>Distance</th><th>Calories</th></tr></thead><tbody>';
-            
-            weeklyStats.forEach(week => {
-                weeklyHtml += `
-                    <tr>
-                        <td>${week.week}</td>
-                        <td>${week.sessions}</td>
-                        <td>${week.totalDuration.toFixed(0)} min</td>
-                        <td>${week.totalDistance} mi</td>
-                        <td>${week.totalCalories}</td>
-                    </tr>
-                `;
-            });
-            
-            weeklyHtml += '</tbody></table></div>';
-            weeklyStatsEl.innerHTML = weeklyHtml;
-        }
-
-        // Update body stats trends
-        updateBodyStatsTrends();
-        
-        // Display body stats list
-        updateBodyStatsList();
-        
-        // Update sessions list
-        updateSessionsList();
+        progressStatsEl.innerHTML = progressHtml;
     }
+    
+    // Update total stats
+    const totalStatsEl = document.getElementById('totalStats');
+    const totalStats = tracker.getTotalStats();
+    
+    if (typeof totalStats === 'string') {
+        totalStatsEl.innerHTML = `<p>${totalStats}</p>`;
+    } else {
+        let statsHTML = `
+            <p><strong>Total Sessions:</strong> ${totalStats.totalSessions}</p>
+            <p><strong>Total Duration:</strong> ${totalStats.totalDuration.toFixed(0)} minutes</p>
+            <p><strong>Total Distance:</strong> ${totalStats.totalDistance.toFixed(2)} miles</p>
+            <p><strong>Total Calories:</strong> ${totalStats.totalCalories.toFixed(0)}</p>
+            <p><strong>Average Speed:</strong> ${totalStats.avgSpeed.toFixed(2)} mph</p>`;
+            
+        // Only show average heart rate if we have data
+        if (totalStats.avgHeartRate > 0) {
+            statsHTML += `<p><strong>Average Heart Rate:</strong> ${totalStats.avgHeartRate.toFixed(0)} BPM</p>`;
+        }
+        
+        // Add current stats if available
+        if (latestStats) {
+            statsHTML += `
+                <hr>
+                <p><strong>Current Weight:</strong> ${latestStats.weight} lbs</p>
+                <p><strong>Current BMI:</strong> ${latestStats.bmi}</p>
+            `;
+        }
+        
+        totalStatsEl.innerHTML = statsHTML;
+    }
+    
+    // Update weekly stats
+    const weeklyStatsEl = document.getElementById('weeklyStats');
+    const weeklyStats = tracker.getWeeklyStats();
+    
+    if (typeof weeklyStats === 'string') {
+        weeklyStatsEl.innerHTML = `<p>${weeklyStats}</p>`;
+    } else {
+        let weeklyHtml = '<div style="max-height: 300px; overflow-y: auto;">';
+        weeklyHtml += '<table class="table table-sm"><thead><tr><th>Week</th><th>Sessions</th><th>Duration</th><th>Distance</th><th>Calories</th></tr></thead><tbody>';
+        
+        weeklyStats.forEach(week => {
+            weeklyHtml += `
+                <tr>
+                    <td>${week.week}</td>
+                    <td>${week.sessions}</td>
+                    <td>${week.totalDuration.toFixed(0)} min</td>
+                    <td>${week.totalDistance} mi</td>
+                    <td>${week.totalCalories}</td>
+                </tr>
+            `;
+        });
+        
+        weeklyHtml += '</tbody></table></div>';
+        weeklyStatsEl.innerHTML = weeklyHtml;
+    }
+
+    // Update body stats trends
+    updateBodyStatsTrends();
+    
+    // Display body stats list
+    updateBodyStatsList();
+    
+    // Update sessions list
+    updateSessionsList();
+}
     
     // Update body stats trends section
     function updateBodyStatsTrends() {

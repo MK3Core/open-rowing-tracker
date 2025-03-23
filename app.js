@@ -15,14 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ====== THEME FUNCTIONALITY ======
     
-    // Check for saved theme preference
-    const currentTheme = localStorage.getItem('theme') || 'light';
+    // Check for saved theme preference or default to dark
+    const currentTheme = localStorage.getItem('theme') || 'dark';
     
-    // Apply saved theme on load
+    // Apply theme on load
     if (currentTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         toggleSwitch.checked = true;
         themeIcon.textContent = '☀️';
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        toggleSwitch.checked = false;
+        themeIcon.textContent = '🌙';
     }
     
     // Handle toggle switch changes

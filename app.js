@@ -166,13 +166,13 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (!isNaN(duration) && !isNaN(speed) && (durationLastModified || speedLastModified)) {
             // distance = duration / 60 * speed (convert minutes to hours)
             const calculatedDistance = (duration / 60) * speed;
-            distanceInput.value = calculatedDistance.toFixed(2);
+            distanceInput.value = calculatedDistance.toFixed(1);
         }
         // If duration and distance are valid, calculate speed
         else if (!isNaN(duration) && !isNaN(distance) && duration > 0 && (durationLastModified || distanceLastModified)) {
             // speed = distance / (duration / 60) (convert minutes to hours)
             const calculatedSpeed = distance / (duration / 60);
-            speedInput.value = calculatedSpeed.toFixed(2);
+            speedInput.value = calculatedSpeed.toFixed(1);
         }
     }
     

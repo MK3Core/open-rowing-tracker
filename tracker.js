@@ -29,9 +29,9 @@ class RowingTracker {
   addSession(date, duration, distance, avgSpeed, heartRate, calories, strokeRate, notes) {
     const sessionData = {
       date: date || new Date().toISOString().split('T')[0],
-      duration: parseFloat(duration),
-      distance: parseFloat(distance),
-      avgSpeed: parseFloat(avgSpeed),
+      duration: parseFloat(parseFloat(duration).toFixed(1)),
+      distance: parseFloat(parseFloat(distance).toFixed(1)),
+      avgSpeed: parseFloat(parseFloat(avgSpeed).toFixed(1)),
       heartRate: heartRate ? parseInt(heartRate) : null,
       caloriesBurned: parseInt(calories),
       strokeRate: strokeRate ? parseInt(strokeRate) : null,

@@ -439,3 +439,9 @@ input:checked + .slider:before {
 [data-theme="dark"] .card-header .btn-link {
     color: var(--text-color);
 }
+[data-theme="dark"] ::placeholder {
+  color: #adb5bd; /* Light gray color that will be visible on dark backgrounds */
+}
+[data-theme="dark"] #exportBox::placeholder {
+  color: #adb5bd; /* Specifically for the export box */
+}

@@ -1018,18 +1018,45 @@ const sessionFormat = document.getElementById('sessionFormat');
 const sessionTips = document.getElementById('sessionTips');
 const modifySessionBtn = document.getElementById('modifySessionBtn');
     
-// Initialize session planner UI
-function initSessionPlannerUI() {
-    // Hide if no body measurements yet
-    if (!tracker.getLatestBodyStats()) {
-        document.getElementById('nextSessionCard').style.display = 'none';
-        return;
-    }
+    function initSessionPlannerUI() {
+    // Always show the next session card
+    document.getElementById('nextSessionCard').style.display = 'block';
     
+    // Update the session UI regardless of whether there are body measurements
     updateNextSessionUI();
-}
     
-// Update next session UI
+    // If no body measurements yet, show a message encouraging the user to add them
+    if (!tracker.getLatestBodyStats()) {
+        // Add a notice in the session tips section
+        const sessionTips = document.getElementById('sessionTips');
+        sessionTips.innerHTML = `
+            <li><strong>Add your body measurements first</strong> to get personalized calorie calculations</li>
+            <li>Complete all stretches before starting</li>
+            <li>Focus on your form over speed or intensity</li>
+            <li>Maintain a steady breathing pattern</li>
+        `;
+        
+        // Add an alert in the session card
+        const sessionCardBody = document.querySelector('#nextSessionCard .card-body');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-info mt-2 mb-3';
+        alertDiv.id = 'measurementAlert';
+        alertDiv.innerHTML = `
+            <strong>Tip:</strong> Add your body measurements to calculate calories burned and get personalized recommendations.
+        `;
+        
+        // Insert the alert at the top of the card body
+        sessionCardBody.insertBefore(alertDiv, sessionCardBody.firstChild);
+    } else {
+        // Remove the alert if it exists and user has added measurements
+        const existingAlert = document.getElementById('measurementAlert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+    }
+}
+
+// Update the next session UI element
 function updateNextSessionUI() {
     try {
         const nextSession = sessionPlanner.getNextSessionDetails();
@@ -1052,12 +1079,16 @@ function updateNextSessionUI() {
         
         // Update tips based on current week
         const weekSpecificTips = getWeekSpecificTips(nextSession.week);
-        sessionTips.innerHTML = '';
-        weekSpecificTips.forEach(tip => {
-            const li = document.createElement('li');
-            li.textContent = tip;
-            sessionTips.appendChild(li);
-        });
+        
+        // Only update the tips if we have body measurements (otherwise we keep our custom tips)
+        if (tracker.getLatestBodyStats()) {
+            sessionTips.innerHTML = '';
+            weekSpecificTips.forEach(tip => {
+                const li = document.createElement('li');
+                li.textContent = tip;
+                sessionTips.appendChild(li);
+            });
+        }
     } catch (err) {
         console.error('Error updating session UI:', err);
     }
@@ -1223,15 +1254,23 @@ document.getElementById('planNextSessionBtn').addEventListener('click', function
     document.getElementById('nextSessionCard').scrollIntoView({ behavior: 'smooth' });
 });
 
-// Update session planner UI when body stats are added or data is imported
 bodyStatsForm.addEventListener('submit', function() {
     // The original submit handler runs first, then this will execute
     setTimeout(() => {
-        document.getElementById('nextSessionCard').style.display = 'block';
+        // Remove the measurement alert if it exists
+        const existingAlert = document.getElementById('measurementAlert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+        
+        // Reinitialize the session planner UI
         initSessionPlannerUI();
     }, 100);
 });
 
 // Initialize session planner UI during page load
+// Make sure the next session card is visible
+document.getElementById('nextSessionCard').style.display = 'block';
+// Initialize the UI
 initSessionPlannerUI();
 });

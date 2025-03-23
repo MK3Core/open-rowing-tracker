@@ -672,8 +672,11 @@ document.addEventListener('DOMContentLoaded', function() {
         progressStatsEl.innerHTML = `<p>${progressStats}</p>`;
     } else {
         // Define what constitutes improvement for each metric
-        const isSpeedImproved = progressStats.speedChange.value > 0;
+        const isSpeedImproved = parseFloat(progressStats.speedChange.value) > 0;
         const isDurationImproved = progressStats.durationChange.value > 0;
+        // For heart rate, a decrease (negative value) indicates improvement
+        const isHeartRateImproved = progressStats.heartRateChange ? 
+                                   parseFloat(progressStats.heartRateChange.value) < 0 : false;
         
         let progressHtml = `
             <div class="row">
@@ -696,8 +699,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     
         // Only show heart rate change if we have the data
         if (progressStats.heartRateChange) {
-            // For heart rate, a DECREASE is good (opposite of other metrics)
-            const isHeartRateImproved = progressStats.heartRateChange.value < 0;
             progressHtml += `
                     <p><strong>Heart Rate Change:</strong> 
                         <span class="${isHeartRateImproved ? 'text-success' : 'text-danger'}">

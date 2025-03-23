@@ -63,6 +63,14 @@ After each completed session, the application provides personalized feedback by:
 
 ## Setup Instructions
 
+You can use the Rowing Progress Tracker in two ways:
+
+### Option 1: Use the Online Version
+- Simply visit [https://mk3core.github.io/open-rowing-tracker/](https://mk3core.github.io/open-rowing-tracker/)
+- The application will run directly in your browser
+- Your data will be stored in your browser's local storage
+
+### Option 2: Download for Offline Use
 1. **Download the Files**
    - Download all files to a folder on your computer
    - You need the following files:
@@ -78,10 +86,10 @@ After each completed session, the application provides personalized feedback by:
    - Simply open the `index.html` file in your web browser
    - No server or internet connection required
 
-3. **Getting Started**
-   - The first step is to add your body measurements (weight, BMI, etc.)
-   - Once body measurements are added, you can see your recommended workouts
-   - Follow the structured plan or create custom sessions
+### Getting Started
+- The first step is to add your body measurements (weight, BMI, etc.)
+- Once body measurements are added, you can see your recommended workouts
+- Follow the structured plan or create custom sessions
 
 ## Using the Tracker
 

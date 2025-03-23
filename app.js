@@ -939,45 +939,18 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('rowingTrackerData', tracker.exportData());
     }
 
-// ====== IMPROVED DATA BACKUP & RESTORE FUNCTIONALITY ======
+// ====== SIMPLIFIED DATA BACKUP & RESTORE FUNCTIONALITY ======
 (function setupBackupRestore() {
     // Get the necessary elements
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
-    const exportBoxContainer = document.getElementById('exportBoxContainer');
     const exportBox = document.getElementById('exportBox');
-    const collapseElement = document.getElementById('importExportCollapse');
-    const backupIcon = document.querySelector('.backup-icon');
-    
-    // Use Bootstrap's collapse API for proper toggle behavior
-    try {
-        // Only initialize if element exists and Bootstrap is available
-        if(collapseElement && typeof bootstrap !== 'undefined') {
-            const bsCollapse = new bootstrap.Collapse(collapseElement, {
-                toggle: false
-            });
-            
-            // Add event listeners for collapse events
-            collapseElement.addEventListener('show.bs.collapse', function() {
-                if(backupIcon) backupIcon.textContent = '🔽';
-            });
-            
-            collapseElement.addEventListener('hide.bs.collapse', function() {
-                if(backupIcon) backupIcon.textContent = '⚙️';
-                // Hide the export box when collapsing
-                exportBoxContainer.style.display = 'none';
-            });
-        }
-    } catch(e) {
-        console.error('Error initializing data backup UI:', e);
-    }
     
     // Show textarea when export button is clicked
     if(exportBtn) {
         exportBtn.addEventListener('click', function() {
             exportBox.value = tracker.exportData();
             exportBox.select();
-            exportBoxContainer.style.display = 'block';
             showToast('Data exported. Copy to save it.');
         });
     }
@@ -985,7 +958,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show textarea when import button is clicked
     if(importBtn) {
         importBtn.addEventListener('click', function() {
-            exportBoxContainer.style.display = 'block';
             exportBox.focus();
             
             if (exportBox.value.trim() === '') {
@@ -1008,6 +980,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
                         if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
                     }
+                    
+                    // Initialize session planner UI after import
+                    setTimeout(() => {
+                        initSessionPlannerUI();
+                    }, 500);
                     
                     showToast('Data imported successfully!');
                 } catch (e) {

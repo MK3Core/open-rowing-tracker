@@ -513,44 +513,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Export button click
     exportBtn.addEventListener('click', function() {
-        exportBox.value = tracker.exportData();
-        exportBox.select();
-        document.getElementById('exportBoxContainer').classList.add('show');
-        showToast('Data exported. Copy to save it.');
-    });
+    exportBox.value = tracker.exportData();
+    exportBox.select();
+    document.getElementById('exportBoxContainer').classList.add('show');
+    showToast('Data exported. Copy to save it.');
+});
 
     // Import button click
     importBtn.addEventListener('click', function() {
-        document.getElementById('exportBoxContainer').classList.add('show');
-        
-        if (exportBox.value.trim() === '') {
-            showToast('Please paste data to import first!', 'warning');
-            return;
-        }
-        
-        if (confirm("This will replace all your current data. Are you sure?")) {
-            try {
-                tracker.importData(exportBox.value);
-                saveData();
-                refreshUI();
-                
-                // Prefill form fields with latest data
-                const latestStats = tracker.getLatestBodyStats();
-                if (latestStats) {
-                    if (latestStats.weight) document.getElementById('statsWeight').value = latestStats.weight;
-                    if (latestStats.bmi) document.getElementById('statsBmi').value = latestStats.bmi;
-                    if (latestStats.bodyFat) document.getElementById('bodyFat').value = latestStats.bodyFat;
-                    if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
-                    if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
-                }
-                
-                showToast('Data imported successfully!');
-            } catch (e) {
-                console.error('Error importing data:', e);
-                showToast('Error importing data! Please check the format.', 'error');
+    document.getElementById('exportBoxContainer').classList.add('show');
+    
+    if (exportBox.value.trim() === '') {
+        showToast('Please paste data to import first!', 'warning');
+        return;
+    }
+    
+    if (confirm("This will replace all your current data. Are you sure?")) {
+        try {
+            tracker.importData(exportBox.value);
+            saveData();
+            refreshUI();
+            
+            // Prefill form fields with latest data
+            const latestStats = tracker.getLatestBodyStats();
+            if (latestStats) {
+                if (latestStats.weight) document.getElementById('statsWeight').value = latestStats.weight;
+                if (latestStats.bmi) document.getElementById('statsBmi').value = latestStats.bmi;
+                if (latestStats.bodyFat) document.getElementById('bodyFat').value = latestStats.bodyFat;
+                if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
+                if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
             }
+            
+            showToast('Data imported successfully!');
+        } catch (e) {
+            console.error('Error importing data:', e);
+            showToast('Error importing data! Please check the format.', 'error');
         }
-    });
+    }
+});
 
     // ====== UI UPDATE FUNCTIONS ======
 
@@ -982,19 +982,99 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set up collapsible elements for import/export box
     document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const target = document.querySelector(this.getAttribute('data-bs-target'));
-            if (target) {
-                target.classList.toggle('show');
-                
-                // Update arrow icon
-                const arrow = this.querySelector('.small');
-                if (arrow) {
-                    arrow.textContent = target.classList.contains('show') ? '⯅' : '⯆';
+    button.addEventListener('click', function() {
+        const target = document.querySelector(this.getAttribute('data-bs-target'));
+        if (target) {
+            target.classList.toggle('show');
+            
+            // Update arrow icon
+            const arrow = this.querySelector('.small');
+            if (arrow) {
+                arrow.textContent = target.classList.contains('show') ? '⯅' : '⯆';
+            }
+        }
+    });
+});
+
+// ====== IMPROVED DATA BACKUP & RESTORE FUNCTIONALITY ======
+(function setupBackupRestore() {
+    // Get the necessary elements
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const exportBoxContainer = document.getElementById('exportBoxContainer');
+    const exportBox = document.getElementById('exportBox');
+    const collapseElement = document.getElementById('importExportCollapse');
+    const backupIcon = document.querySelector('.backup-icon');
+    
+    // Use Bootstrap's collapse API for proper toggle behavior
+    try {
+        // Only initialize if element exists and Bootstrap is available
+        if(collapseElement && typeof bootstrap !== 'undefined') {
+            const bsCollapse = new bootstrap.Collapse(collapseElement, {
+                toggle: false
+            });
+            
+            // Add event listeners for collapse events
+            collapseElement.addEventListener('show.bs.collapse', function() {
+                if(backupIcon) backupIcon.textContent = '🔽';
+            });
+            
+            collapseElement.addEventListener('hide.bs.collapse', function() {
+                if(backupIcon) backupIcon.textContent = '⚙️';
+                // Hide the export box when collapsing
+                exportBoxContainer.style.display = 'none';
+            });
+        }
+    } catch(e) {
+        console.error('Error initializing data backup UI:', e);
+    }
+    
+    // Show textarea when export button is clicked
+    if(exportBtn) {
+        exportBtn.addEventListener('click', function() {
+            exportBox.value = tracker.exportData();
+            exportBox.select();
+            exportBoxContainer.style.display = 'block';
+            showToast('Data exported. Copy to save it.');
+        });
+    }
+    
+    // Show textarea when import button is clicked
+    if(importBtn) {
+        importBtn.addEventListener('click', function() {
+            exportBoxContainer.style.display = 'block';
+            exportBox.focus();
+            
+            if (exportBox.value.trim() === '') {
+                showToast('Please paste data to import first!', 'warning');
+                return;
+            }
+            
+            if (confirm("This will replace all your current data. Are you sure?")) {
+                try {
+                    tracker.importData(exportBox.value);
+                    saveData();
+                    refreshUI();
+                    
+                    // Prefill form fields with latest data
+                    const latestStats = tracker.getLatestBodyStats();
+                    if (latestStats) {
+                        if (latestStats.weight) document.getElementById('statsWeight').value = latestStats.weight;
+                        if (latestStats.bmi) document.getElementById('statsBmi').value = latestStats.bmi;
+                        if (latestStats.bodyFat) document.getElementById('bodyFat').value = latestStats.bodyFat;
+                        if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
+                        if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
+                    }
+                    
+                    showToast('Data imported successfully!');
+                } catch (e) {
+                    console.error('Error importing data:', e);
+                    showToast('Error importing data! Please check the format.', 'error');
                 }
             }
         });
-    });
+    }
+})();
 
     // Initialize rowing calculator
     initRowingCalculator();

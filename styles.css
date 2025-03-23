@@ -405,3 +405,27 @@ input:checked + .slider:before {
     background-color: rgba(226, 227, 229, 0.2);
     color: #e2e3e5;
 }
+
+/* Data Backup & Restore styles */
+.card-header .btn-link {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+#importExportCollapse {
+    transition: height 0.3s ease-out;
+}
+
+#exportBoxContainer {
+    transition: all 0.3s ease;
+}
+
+#exportBox {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* For dark mode compatibility */
+[data-theme="dark"] .card-header .btn-link {
+    color: var(--text-color);
+}

@@ -1018,35 +1018,26 @@ const sessionFormat = document.getElementById('sessionFormat');
 const sessionTips = document.getElementById('sessionTips');
 const modifySessionBtn = document.getElementById('modifySessionBtn');
     
-    function initSessionPlannerUI() {
+function initSessionPlannerUI() {
     // Always show the next session card
     document.getElementById('nextSessionCard').style.display = 'block';
     
     // Update the session UI regardless of whether there are body measurements
     updateNextSessionUI();
     
-    // If no body measurements yet, show a message encouraging the user to add them
+    // If no body measurements yet, update the session tips but don't show alert
     if (!tracker.getLatestBodyStats()) {
         // Add a notice in the session tips section
         const sessionTips = document.getElementById('sessionTips');
         sessionTips.innerHTML = `
-            <li><strong>Add your body measurements first</strong> to get personalized calorie calculations</li>
             <li>Complete all stretches before starting</li>
             <li>Focus on your form over speed or intensity</li>
             <li>Maintain a steady breathing pattern</li>
+            <li>Stay hydrated throughout your session</li>
         `;
         
-        // Add an alert in the session card
-        const sessionCardBody = document.querySelector('#nextSessionCard .card-body');
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'alert alert-info mt-2 mb-3';
-        alertDiv.id = 'measurementAlert';
-        alertDiv.innerHTML = `
-            <strong>Tip:</strong> Add your body measurements to calculate calories burned and get personalized recommendations.
-        `;
-        
-        // Insert the alert at the top of the card body
-        sessionCardBody.insertBefore(alertDiv, sessionCardBody.firstChild);
+        // We're removing the alert creation and insertion code here
+        // No more measurementAlert will be created
     } else {
         // Remove the alert if it exists and user has added measurements
         const existingAlert = document.getElementById('measurementAlert');

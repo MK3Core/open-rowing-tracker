@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         toggleSwitch.checked = true;
-        themeIcon.textContent = '☀️';
+        themeIcon.textContent = '🌙';
     } else {
         document.documentElement.setAttribute('data-theme', 'light');
         toggleSwitch.checked = false;
-        themeIcon.textContent = '🌙';
+        themeIcon.textContent = '☀️';
     }
     
     // Handle toggle switch changes
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.checked) {
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
-            themeIcon.textContent = '☀️';
+            themeIcon.textContent = '🌙';
             
             // Update chart theme if chart exists
             if (weightChart) {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');
-            themeIcon.textContent = '🌙';
+            themeIcon.textContent = '☀️';
             
             // Update chart theme if chart exists
             if (weightChart) {

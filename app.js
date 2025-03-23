@@ -511,47 +511,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast('Session added successfully!');
     });
 
-    // Export button click
-    exportBtn.addEventListener('click', function() {
-    exportBox.value = tracker.exportData();
-    exportBox.select();
-    document.getElementById('exportBoxContainer').classList.add('show');
-    showToast('Data exported. Copy to save it.');
-});
-
-    // Import button click
-    importBtn.addEventListener('click', function() {
-    document.getElementById('exportBoxContainer').classList.add('show');
-    
-    if (exportBox.value.trim() === '') {
-        showToast('Please paste data to import first!', 'warning');
-        return;
-    }
-    
-    if (confirm("This will replace all your current data. Are you sure?")) {
-        try {
-            tracker.importData(exportBox.value);
-            saveData();
-            refreshUI();
-            
-            // Prefill form fields with latest data
-            const latestStats = tracker.getLatestBodyStats();
-            if (latestStats) {
-                if (latestStats.weight) document.getElementById('statsWeight').value = latestStats.weight;
-                if (latestStats.bmi) document.getElementById('statsBmi').value = latestStats.bmi;
-                if (latestStats.bodyFat) document.getElementById('bodyFat').value = latestStats.bodyFat;
-                if (latestStats.muscleMass) document.getElementById('muscleMass').value = latestStats.muscleMass;
-                if (latestStats.bodyWater) document.getElementById('bodyWater').value = latestStats.bodyWater;
-            }
-            
-            showToast('Data imported successfully!');
-        } catch (e) {
-            console.error('Error importing data:', e);
-            showToast('Error importing data! Please check the format.', 'error');
-        }
-    }
-});
-
     // ====== UI UPDATE FUNCTIONS ======
 
     // Create body stats chart
@@ -979,22 +938,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveData() {
         localStorage.setItem('rowingTrackerData', tracker.exportData());
     }
-    
-    // Set up collapsible elements for import/export box
-    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
-    button.addEventListener('click', function() {
-        const target = document.querySelector(this.getAttribute('data-bs-target'));
-        if (target) {
-            target.classList.toggle('show');
-            
-            // Update arrow icon
-            const arrow = this.querySelector('.small');
-            if (arrow) {
-                arrow.textContent = target.classList.contains('show') ? '⯅' : '⯆';
-            }
-        }
-    });
-});
 
 // ====== IMPROVED DATA BACKUP & RESTORE FUNCTIONALITY ======
 (function setupBackupRestore() {
@@ -1310,13 +1253,6 @@ bodyStatsForm.addEventListener('submit', function() {
         document.getElementById('nextSessionCard').style.display = 'block';
         initSessionPlannerUI();
     }, 100);
-});
-
-importBtn.addEventListener('click', function() {
-    // The original click handler runs first, then this will execute
-    setTimeout(() => {
-        initSessionPlannerUI();
-    }, 500);
 });
 
 // Initialize session planner UI during page load

@@ -1,0 +1,361 @@
+{
+  "profile": {
+    "currentWeight": "242.1",
+    "currentBMI": "31.8",
+    "startDate": "2025-01-15"
+  },
+  "sessions": [
+    {
+      "date": "2025-01-15",
+      "duration": 10,
+      "distance": 0.8,
+      "avgSpeed": 4.8,
+      "heartRate": 150,
+      "caloriesBurned": 170,
+      "strokeRate": 16,
+      "notes": "[Moderate Effort (5.8 MET)] Week 1 - First session"
+    },
+    {
+      "date": "2025-01-17",
+      "duration": 12,
+      "distance": 1.0,
+      "avgSpeed": 5.0,
+      "heartRate": 148,
+      "caloriesBurned": 205,
+      "strokeRate": 16,
+      "notes": "[Moderate Effort (5.8 MET)] Week 1 - Second session"
+    },
+    {
+      "date": "2025-01-19",
+      "duration": 14,
+      "distance": 1.2,
+      "avgSpeed": 5.1,
+      "heartRate": 145,
+      "caloriesBurned": 240,
+      "strokeRate": 17,
+      "notes": "[Moderate Effort (5.8 MET)] Week 1 - Third session"
+    },
+    {
+      "date": "2025-01-22",
+      "duration": 15,
+      "distance": 1.3,
+      "avgSpeed": 5.2,
+      "heartRate": 144,
+      "caloriesBurned": 255,
+      "strokeRate": 18,
+      "notes": "[Moderate Effort (5.8 MET)] Week 2 - First session"
+    },
+    {
+      "date": "2025-01-24",
+      "duration": 16,
+      "distance": 1.4,
+      "avgSpeed": 5.2,
+      "heartRate": 143,
+      "caloriesBurned": 272,
+      "strokeRate": 18,
+      "notes": "[Moderate Effort (5.8 MET)] Week 2 - Second session"
+    },
+    {
+      "date": "2025-01-26",
+      "duration": 17,
+      "distance": 1.5,
+      "avgSpeed": 5.3,
+      "heartRate": 142,
+      "caloriesBurned": 290,
+      "strokeRate": 18,
+      "notes": "[Moderate Effort (5.8 MET)] Week 2 - Third session"
+    },
+    {
+      "date": "2025-01-28",
+      "duration": 18,
+      "distance": 1.6,
+      "avgSpeed": 5.3,
+      "heartRate": 141,
+      "caloriesBurned": 307,
+      "strokeRate": 19,
+      "notes": "[Moderate Effort (5.8 MET)] Week 2 - Fourth session"
+    },
+    {
+      "date": "2025-01-31",
+      "duration": 20,
+      "distance": 1.8,
+      "avgSpeed": 5.4,
+      "heartRate": 140,
+      "caloriesBurned": 342,
+      "strokeRate": 19,
+      "notes": "[Moderate Effort (5.8 MET)] Week 3 - First session"
+    },
+    {
+      "date": "2025-02-02",
+      "duration": 21,
+      "distance": 1.9,
+      "avgSpeed": 5.4,
+      "heartRate": 139,
+      "caloriesBurned": 360,
+      "strokeRate": 20,
+      "notes": "[Moderate Effort (5.8 MET)] Week 3 - Second session"
+    },
+    {
+      "date": "2025-02-04",
+      "duration": 22,
+      "distance": 2.0,
+      "avgSpeed": 5.5,
+      "heartRate": 138,
+      "caloriesBurned": 378,
+      "strokeRate": 20,
+      "notes": "[Moderate Effort (5.8 MET)] Week 3 - Third session"
+    },
+    {
+      "date": "2025-02-06",
+      "duration": 23,
+      "distance": 2.1,
+      "avgSpeed": 5.5,
+      "heartRate": 138,
+      "caloriesBurned": 396,
+      "strokeRate": 20,
+      "notes": "[Moderate Effort (5.8 MET)] Week 3 - Fourth session"
+    },
+    {
+      "date": "2025-02-09",
+      "duration": 25,
+      "distance": 2.4,
+      "avgSpeed": 5.7,
+      "heartRate": 136,
+      "caloriesBurned": 433,
+      "strokeRate": 20,
+      "notes": "[Moderate Effort (5.8 MET)] Week 4 - First session"
+    },
+    {
+      "date": "2025-02-11",
+      "duration": 26,
+      "distance": 2.5,
+      "avgSpeed": 5.8,
+      "heartRate": 135,
+      "caloriesBurned": 452,
+      "strokeRate": 19,
+      "notes": "[Moderate Effort (5.8 MET)] Week 4 - Second session"
+    },
+    {
+      "date": "2025-02-13",
+      "duration": 27,
+      "distance": 2.7,
+      "avgSpeed": 6.0,
+      "heartRate": 134,
+      "caloriesBurned": 484,
+      "strokeRate": 19,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 4 - Third session"
+    },
+    {
+      "date": "2025-02-15",
+      "duration": 28,
+      "distance": 2.8,
+      "avgSpeed": 6.0,
+      "heartRate": 133,
+      "caloriesBurned": 503,
+      "strokeRate": 19,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 4 - Fourth session"
+    },
+    {
+      "date": "2025-02-18",
+      "duration": 29,
+      "distance": 3.0,
+      "avgSpeed": 6.2,
+      "heartRate": 132,
+      "caloriesBurned": 522,
+      "strokeRate": 19,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 5 - First session"
+    },
+    {
+      "date": "2025-02-21",
+      "duration": 30,
+      "distance": 3.1,
+      "avgSpeed": 6.2,
+      "heartRate": 132,
+      "caloriesBurned": 541,
+      "strokeRate": 19,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 5 - Second session"
+    },
+    {
+      "date": "2025-02-24",
+      "duration": 30,
+      "distance": 3.2,
+      "avgSpeed": 6.4,
+      "heartRate": 131,
+      "caloriesBurned": 541,
+      "strokeRate": 19,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 5 - Third session"
+    },
+    {
+      "date": "2025-02-27",
+      "duration": 30,
+      "distance": 3.3,
+      "avgSpeed": 6.6,
+      "heartRate": 130,
+      "caloriesBurned": 541,
+      "strokeRate": 18,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 5 - Fourth session"
+    },
+    {
+      "date": "2025-03-02",
+      "duration": 30,
+      "distance": 3.4,
+      "avgSpeed": 6.8,
+      "heartRate": 129,
+      "caloriesBurned": 541,
+      "strokeRate": 18,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 6 - First session"
+    },
+    {
+      "date": "2025-03-05",
+      "duration": 30,
+      "distance": 3.5,
+      "avgSpeed": 7.0,
+      "heartRate": 128,
+      "caloriesBurned": 541,
+      "strokeRate": 18,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 6 - Second session"
+    },
+    {
+      "date": "2025-03-08",
+      "duration": 30,
+      "distance": 3.6,
+      "avgSpeed": 7.2,
+      "heartRate": 127,
+      "caloriesBurned": 541,
+      "strokeRate": 17,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 6 - Third session"
+    },
+    {
+      "date": "2025-03-11",
+      "duration": 30,
+      "distance": 3.7,
+      "avgSpeed": 7.4,
+      "heartRate": 126,
+      "caloriesBurned": 541,
+      "strokeRate": 17,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 6 - Fourth session"
+    },
+    {
+      "date": "2025-03-15",
+      "duration": 30,
+      "distance": 3.8,
+      "avgSpeed": 7.6,
+      "heartRate": 125,
+      "caloriesBurned": 541,
+      "strokeRate": 16,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 7 - First session"
+    },
+    {
+      "date": "2025-03-18",
+      "duration": 30,
+      "distance": 3.9,
+      "avgSpeed": 7.8,
+      "heartRate": 124,
+      "caloriesBurned": 541,
+      "strokeRate": 16,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 7 - Second session"
+    },
+    {
+      "date": "2025-03-22",
+      "duration": 30,
+      "distance": 4.0,
+      "avgSpeed": 8.0,
+      "heartRate": 123,
+      "caloriesBurned": 541,
+      "strokeRate": 15,
+      "notes": "[Vigorous Effort (12.0 MET)] Week 7 - Third session (today)"
+    }
+  ],
+  "bodyStats": [
+    {
+      "date": "2025-01-15",
+      "weight": 260.0,
+      "bmi": 34.1,
+      "bodyFat": 35.0,
+      "muscleMass": 32.0,
+      "bodyWater": 47.0,
+      "notes": "Starting measurements"
+    },
+    {
+      "date": "2025-01-22",
+      "weight": 258.2,
+      "bmi": 33.9,
+      "bodyFat": 34.6,
+      "muscleMass": 32.2,
+      "bodyWater": 47.3,
+      "notes": "Week 1 progress"
+    },
+    {
+      "date": "2025-01-29",
+      "weight": 256.6,
+      "bmi": 33.7,
+      "bodyFat": 34.2,
+      "muscleMass": 32.4,
+      "bodyWater": 47.8,
+      "notes": "Week 2 progress"
+    },
+    {
+      "date": "2025-02-05",
+      "weight": 254.8,
+      "bmi": 33.4,
+      "bodyFat": 33.7,
+      "muscleMass": 32.8,
+      "bodyWater": 48.4,
+      "notes": "Week 3 progress"
+    },
+    {
+      "date": "2025-02-12",
+      "weight": 252.7,
+      "bmi": 33.1,
+      "bodyFat": 33.2,
+      "muscleMass": 33.2,
+      "bodyWater": 49.0,
+      "notes": "Week 4 progress"
+    },
+    {
+      "date": "2025-02-19",
+      "weight": 250.4,
+      "bmi": 32.8,
+      "bodyFat": 32.7,
+      "muscleMass": 33.6,
+      "bodyWater": 49.5,
+      "notes": "Week 5 progress"
+    },
+    {
+      "date": "2025-02-26",
+      "weight": 248.0,
+      "bmi": 32.5,
+      "bodyFat": 32.2,
+      "muscleMass": 34.0,
+      "bodyWater": 50.0,
+      "notes": "Week 6 progress"
+    },
+    {
+      "date": "2025-03-05",
+      "weight": 245.8,
+      "bmi": 32.2,
+      "bodyFat": 31.8,
+      "muscleMass": 34.3,
+      "bodyWater": 50.5,
+      "notes": "Week 7 progress"
+    },
+    {
+      "date": "2025-03-12",
+      "weight": 243.9,
+      "bmi": 32.0,
+      "bodyFat": 31.4,
+      "muscleMass": 34.5,
+      "bodyWater": 50.9,
+      "notes": "Week 8 progress"
+    },
+    {
+      "date": "2025-03-19",
+      "weight": 242.1,
+      "bmi": 31.8,
+      "bodyFat": 31.0,
+      "muscleMass": 34.8,
+      "bodyWater": 51.3,
+      "notes": "Week 9 progress"
+    }
+  ]
+}
